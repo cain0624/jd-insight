@@ -1,0 +1,10 @@
+/* Aurora 组件样式（原版 aurora.css 逐字保留）。
+   原版这个类是挂在 React 那层 wrapper div 上的；移植版把它挂在 canvas 上，
+   尺寸由宿主容器（index.html 里的 .bgfx）决定。
+   多出来的 display:block 是必要的：canvas 默认是 inline，会在底部留出基线
+   间隙，在固定满屏的容器里会多出几像素的滚动条。 */
+.aurora-container {
+  width: 100%;
+  height: 100%;
+  display: block;
+}

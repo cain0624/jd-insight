@@ -1,0 +1,2224 @@
+<!DOCTYPE html>
+<!--
+  本文件由 tools/web_build.py 从 kb/web/index.html 生成，**请勿直接修改**。
+  要改界面，请改源文件后重新构建：
+      .venv/bin/python tools/web_build.py
+  源文件一行不改是刻意的：本地版与线上版共用同一份前端，避免两边各自演化。
+-->
+<html lang="zh-CN" data-page-node-id="d1zP7AMALuMhZzUomyPZ1G">
+<head data-page-node-id="Onh0y2TzP7LQ0I0TGYP0Nj">
+<meta charset="utf-8" data-page-node-id="SUtiC7VGpNbHiVxLkCPRrf">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-page-node-id="LeGX3Ed5mXZyuuhBo5Aquv">
+<meta name="theme-color" content="#f7f8fa" data-page-node-id="pFVnnQAOLoH9FTUCobSNzM">
+<meta name="color-scheme" content="light" data-page-node-id="SCvUid4aG5Ke5cExHqqoU5">
+<meta name="apple-mobile-web-app-capable" content="yes" data-page-node-id="EWA6FyzrHVPB748iwmvCC5">
+<meta name="apple-mobile-web-app-title" content="求职，我帮你" data-page-node-id="yHZtCqBLNW3vaQYmQhTnwb">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Ctext x='16' y='22' font-size='15' text-anchor='middle' fill='%23fff' font-family='sans-serif'%3EJD%3C/text%3E%3C/svg%3E" data-page-node-id="oxuedEQrGMvRAIc8R6AERA">
+<link rel="stylesheet" href="static/aurora.css" data-page-node-id="CSiOMZhnzXVUofKGQxpzh4">
+<title>求职，我帮你 · AI 产品经理岗位知识库</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --panel:#ffffff; --line:#e5e7eb; --line-soft:#f0f1f3;
+    --text:#1a1d21; --muted:#6b7280; --faint:#9ca3af;
+    /* 只在「坐在光带上」的那行副标题用它。
+       Aurora 的光带盖住页面上半部，而 --muted 压在纯页底上本来就只有 4.55
+       （AA 线是 4.5），光带一过就掉到 4.19。实测过：这个损失几乎与背景层
+       透明度无关（把 .bgfx 从 .4 降到 .2 只回升 0.3），因为底色接近白，
+       任何染色都在拉低对比度 —— 调淡救不了，只是让效果看不见。
+       所以把那一行字压深一档（实测 ≥4.5），其余文本都在不透明白卡上，
+       光带够不到，不动。 */
+    --muted-on-aurora:#5b626e;
+    --brand:#4f46e5; --brand-soft:#eef2ff;
+    --ok:#059669; --ok-soft:#ecfdf5;
+    --warn:#b45309; --warn-soft:#fffbeb;
+    --err:#dc2626; --err-soft:#fef2f2;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    /* 给左侧固定导航栏让位。用 body 的 padding 而不是给 .wrap 加 margin，
+       是为了让 .wrap 的 `margin:0 auto` 在**剩下的宽度**里居中 ——
+       否则宽屏上正文会贴着侧栏，或者干脆钻到侧栏底下。 */
+    padding-left:168px;
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:940px;margin:0 auto;padding:44px 24px 80px;position:relative;z-index:1}
+  /* 背景动效层：贴住视口、位于所有内容之下、不吃指针事件。
+     用 multiply 混合，是因为 Aurora 的浅色分支在「没有光带」的地方输出纯白
+     （mix(vec3(1.0), chroma, coverage)），乘上去正好等于「什么都不做」——
+     页底 --bg:#f7f8fa 一分不变，白卡片照旧浮得起来。若换成普通叠加，
+     整块页底会被一起提亮成近白，卡片和页底就分不开了。
+
+     整层再压到 40% 不透明度：光带最强处与页底色差 26/255，
+     顶部那段直接坐在页底上的副标题，对比度从 4.55 降到 3.95。
+     要更淡/更明显只动这一个数（改颜色会连带改掉色相）。 */
+  .bgfx{
+    position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+    opacity:.4;mix-blend-mode:multiply;
+  }
+  header h1{font-size:24px;margin:0 0 6px;letter-spacing:-.4px}
+  header p{margin:0;color:var(--muted-on-aurora);font-size:13.5px}
+  /* 品牌文案居中。页头现在只剩这一块了 —— 三个入口已经移到左侧导航栏
+     （.sidenav），所以这里不再需要 flex 横排。 */
+  .head-row{text-align:center}
+  .head-row .grow{min-width:0}
+  .ghost{
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:6px 12px;font:inherit;font-size:12.5px;color:var(--muted);
+    cursor:pointer;transition:.15s;white-space:nowrap;
+  }
+  .ghost:hover{border-color:#c7d2fe;color:var(--brand);background:var(--brand-soft)}
+
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .badge{
+    background:var(--panel);border:1px solid var(--line);border-radius:999px;
+    padding:5px 12px;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center;
+  }
+  .badge b{color:var(--text);font-weight:600}
+  .pill{
+    font-size:11.5px;padding:2px 9px;border-radius:999px;margin-left:8px;
+    background:var(--bg);border:1px solid var(--line);color:var(--muted);font-weight:400;
+  }
+  .pill.ok{background:var(--ok-soft);border-color:#a7f3d0;color:var(--ok)}
+  .pill.info{background:var(--brand-soft);border-color:#c7d2fe;color:var(--brand)}
+
+  .banner{
+    margin-top:18px;padding:12px 15px;border-radius:10px;font-size:13.5px;
+    background:var(--warn-soft);border:1px solid #fde68a;color:var(--warn);display:none;
+  }
+  .banner code{background:#fff;padding:1px 6px;border-radius:5px;border:1px solid #fde68a;font-size:12.5px}
+
+  form{margin-top:22px}
+  .box{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .box:focus-within{border-color:#c7d2fe;box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+  textarea{
+    width:100%;border:0;outline:0;resize:none;padding:16px 18px;
+    font:inherit;font-size:15px;background:transparent;min-height:56px;
+  }
+  textarea::placeholder{color:var(--faint)}
+  .bar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 14px;border-top:1px solid var(--line-soft);background:#fcfcfd;gap:12px;flex-wrap:wrap;
+  }
+  .seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:2px}
+  .seg button{
+    border:0;background:transparent;padding:5px 13px;border-radius:6px;cursor:pointer;
+    font:inherit;font-size:13px;color:var(--muted);transition:.15s;
+  }
+  .seg button.on{background:var(--panel);color:var(--text);font-weight:600;box-shadow:0 1px 2px rgba(16,24,40,.08)}
+  .submit{
+    border:0;background:var(--brand);color:#fff;padding:8px 22px;border-radius:8px;
+    font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s;
+  }
+  .submit:hover{background:#4338ca}
+  .submit:disabled{background:#c7cbd4;cursor:not-allowed}
+
+  .examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .chip{
+    background:var(--panel);border:1px solid var(--line);border-radius:999px;
+    padding:6px 13px;font-size:12.5px;color:var(--muted);cursor:pointer;transition:.15s;
+  }
+  .chip:hover{border-color:#c7d2fe;color:var(--brand);background:var(--brand-soft)}
+  .chip.sm{padding:4px 11px;font-size:12px}
+
+  #out{margin-top:26px}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:0 1px 2px rgba(16,24,40,.04);margin-bottom:16px;overflow:hidden;
+  }
+  .card-h{
+    padding:12px 18px;border-bottom:1px solid var(--line-soft);
+    display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .card-b{padding:18px}
+  .card-b.tight{padding:0}
+
+  .route{
+    display:inline-flex;align-items:center;gap:7px;background:var(--brand-soft);
+    color:var(--brand);border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:600;
+  }
+  .meta{color:var(--faint);font-size:12.5px;font-weight:400;margin-left:auto}
+  .inherit{
+    margin:0 0 10px;font-size:12.5px;color:var(--brand);
+    background:var(--brand-soft);border:1px solid #c7d2fe;border-radius:8px;padding:6px 11px;
+  }
+
+  .md{font-size:14.5px}
+  .md p{margin:0 0 10px}
+  .md p:last-child{margin-bottom:0}
+  .md strong{font-weight:650}
+  .md code{background:#f3f4f6;padding:1.5px 5px;border-radius:4px;font-size:13px;
+           font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .md ul{margin:8px 0;padding-left:20px}
+  .md li{margin:3px 0}
+  .md h3{font-size:14px;margin:14px 0 6px}
+  .md table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13.5px}
+  .md th,.md td{border:1px solid var(--line);padding:7px 11px;text-align:left}
+  .md th{background:#fafbfc;font-weight:600}
+
+  /* 大数字卡 */
+  .kpi{padding:8px 0}
+  .kpi-v{font-size:38px;font-weight:680;letter-spacing:-1px;line-height:1.15;color:var(--brand)}
+  .kpi-v .unit{font-size:20px;margin-left:3px;color:var(--muted);font-weight:600}
+  .kpi-l{color:var(--muted);font-size:13px;margin-top:3px}
+
+  /* 图表 */
+  .chart{padding:12px 10px 6px}
+  .chart svg{display:block;width:100%;height:auto;margin:0 auto}
+  .chart.scroll{max-height:470px;overflow:auto;-webkit-overflow-scrolling:touch}
+
+  /* 洞察 */
+  .insights{padding:14px 18px;background:#fcfcfd}
+  .insights ul{margin:0;padding-left:18px}
+  .insights li{font-size:13.5px;color:#404652;margin:4px 0}
+
+  /* 追问建议 */
+  .sugg{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 16px}
+  .sugg-l{font-size:12.5px;color:var(--faint)}
+
+  /* 反馈与导出 */
+  .fb{
+    display:flex;align-items:center;gap:8px;padding:10px 18px;
+    border-top:1px solid var(--line-soft);background:#fcfcfd;flex-wrap:wrap;
+  }
+  .fb-l{font-size:12.5px;color:var(--faint);margin-right:2px}
+  .fb-msg{font-size:12.5px;color:var(--ok);margin-left:auto}
+
+  pre.sql{
+    margin:0;padding:15px 18px;background:#1e2230;color:#e6e9f0;overflow-x:auto;
+    font:12.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  pre.sql .kw{color:#a5b4fc}
+
+  table.res{border-collapse:collapse;width:100%;font-size:13.5px}
+  table.res th,table.res td{border-bottom:1px solid var(--line-soft);padding:9px 14px;text-align:left}
+  table.res th{background:#fafbfc;font-weight:600;color:var(--muted);font-size:12.5px;
+               position:sticky;top:0;white-space:nowrap}
+  table.res tr:last-child td{border-bottom:0}
+  table.res td{max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .scroll{max-height:420px;overflow:auto;-webkit-overflow-scrolling:touch}
+
+  .hit{border:1px solid var(--line-soft);border-radius:10px;padding:14px 16px;margin-bottom:10px;background:#fcfcfd}
+  .hit:last-child{margin-bottom:0}
+  .hit-h{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:8px}
+  .hit-h b{font-size:13.5px;font-weight:650}
+  .hit-h .sub{color:var(--faint);font-size:12px}
+  .score{margin-left:auto;color:var(--faint);font-size:11.5px;
+         font-family:ui-monospace,Menlo,monospace}
+  .hit-t{font-size:13.5px;color:#404652;white-space:pre-wrap;line-height:1.7}
+  .hit-t.collapsed{max-height:90px;overflow:hidden;
+    -webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+  .toggle{background:none;border:0;color:var(--brand);font:inherit;font-size:12.5px;
+          cursor:pointer;padding:6px 0 0}
+  .hit a{color:var(--brand);font-size:12.5px;text-decoration:none}
+  .hit a:hover{text-decoration:underline}
+
+  /* 口径检视 */
+  details.explain summary{
+    padding:11px 18px;cursor:pointer;font-size:12.5px;color:var(--muted);list-style:none;
+  }
+  details.explain summary::-webkit-details-marker{display:none}
+  details.explain summary:hover{color:var(--brand)}
+  .ex-b{padding:0 18px 16px}
+  .ex-row{font-size:13px;color:#404652;margin:6px 0}
+  .ex-row b{color:var(--text)}
+  .ex-note{font-size:12.5px;color:var(--muted);background:#fafbfc;border:1px solid var(--line-soft);
+           border-radius:8px;padding:9px 12px;margin-top:10px}
+  .ex-att{font-size:12px;font-family:ui-monospace,Menlo,monospace;color:var(--muted);
+          background:#fafbfc;border:1px solid var(--line-soft);border-radius:6px;
+          padding:7px 10px;margin-top:6px;white-space:pre-wrap;overflow-x:auto}
+
+  .err{background:var(--err-soft);border:1px solid #fecaca;color:var(--err);
+       padding:12px 15px;border-radius:10px;font-size:13.5px}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.35);
+        border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .empty{color:var(--faint);font-size:13.5px;padding:8px 0}
+
+  /* 历史抽屉 */
+  .drawer{
+    position:fixed;top:0;left:0;bottom:0;width:310px;background:var(--panel);
+    border-right:1px solid var(--line);box-shadow:2px 0 14px rgba(16,24,40,.06);
+    transform:translateX(-102%);transition:transform .2s ease;z-index:20;
+    display:flex;flex-direction:column;
+  }
+  .drawer.on{transform:none}
+  .drawer-h{padding:16px 18px;border-bottom:1px solid var(--line-soft);
+            display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:650}
+  .drawer-b{overflow:auto;padding:8px 10px;flex:1}
+  .hitem{
+    padding:9px 11px;border-radius:8px;font-size:13px;color:#404652;cursor:pointer;
+    display:flex;gap:8px;align-items:baseline;
+  }
+  .hitem:hover{background:var(--brand-soft);color:var(--brand)}
+  .hitem .t{color:var(--faint);font-size:11.5px;margin-left:auto;flex:none}
+  .drawer-f{padding:10px 14px;border-top:1px solid var(--line-soft);font-size:12px;color:var(--faint)}
+  .mask{position:fixed;inset:0;background:rgba(16,24,40,.25);z-index:19;display:none}
+  .mask.on{display:block}
+
+  /* ---------- 「去学习」浮窗（站外刷题应用） ----------
+     把站外的移动端应用（cain0624.github.io/ai-pm-app）用一个手机形状的浮窗
+     浮在上层。四条约束是死的，改的时候别绕过去：
+
+     ① 「移动端尺寸」必须是 iframe 的**真实视口**，不能靠把窗口缩窄来伪装。
+        对方页面是按 viewport 宽度做响应式的，只要 iframe 的文档宽度不是 390，
+        它就会切到别的断点，「移动端尺寸」就名存实亡。所以 iframe 恒定按档位
+        尺寸（默认 390×844），宿主装不下时用 transform:scale 等比缩小 ——
+        视觉变小，视口不变。
+     ② 拖拽靠 transform 平移，缩放也靠 transform，两者**不能加在同一个元素**上，
+        否则位移会被乘上缩放系数（拖 100px 实际跑 60px）。所以平移加在
+        .learn-win，缩放只加在 iframe。
+     ③ 平移量用 CSS 变量 --lx/--ly 喂进 transform，而不是让 JS 重写整个
+        transform —— 居中的 translate(-50%,-50%) 不能被覆盖掉。
+     ④ **手机框必须贴着屏幕，不能撑满一行。** `.learn-screen` 是显式设宽的
+        块级元素（宽度 = 390×缩放），而块级元素在容器里是**左对齐**的 ——
+        只要手机框比屏幕宽，缩放腾出的空间就全堆在右边。实测 1512×717 下
+        左边 8px、右边 94px，看起来就是「手机边框右边多出来一块」。
+        所以 .learn-phone 用 width:fit-content 收成刚好包住屏幕，再加
+        .learn-screen 的 margin:0 auto 作为兜底（万一将来手机框又被撑宽，
+        也是两边均分而不是全堆右侧）。
+        窗口宽度也必须在 learnLayout() 里跟屏幕对齐 —— 它原来是「谁的最大
+        内容宽最大就听谁的」，而底部提示条的地址串有 390px 宽，比屏幕还宽。 */
+  .learn-win{
+    position:fixed;left:50%;top:50%;z-index:61;display:none;
+    transform:translate(calc(-50% + var(--lx,0px)), calc(-50% + var(--ly,0px)));
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    box-shadow:0 26px 70px rgba(16,24,40,.26), 0 2px 10px rgba(16,24,40,.08);
+    overflow:hidden;max-width:calc(100vw - 16px);
+  }
+  .learn-win.on{display:flex;flex-direction:column}
+  .learn-bar{
+    display:flex;align-items:center;gap:10px;padding:9px 10px 9px 14px;
+    border-bottom:1px solid var(--line-soft);cursor:grab;
+    user-select:none;-webkit-user-select:none;touch-action:none;
+  }
+  .learn-bar.dragging{cursor:grabbing}
+  .learn-bar .lt{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:650;min-width:0}
+  .learn-bar .lt i{width:6px;height:6px;border-radius:50%;background:var(--ok);flex:none}
+  /* 标题要能被挤短（省略号），不能把 ✕ 顶出窗口 —— 窗口现在是按屏幕宽度
+     收紧的，标题栏比原来窄，长文案必须让位。 */
+  .learn-bar .lt .ltt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .learn-win .lsp{flex:1;min-width:8px}
+  .learn-acts{display:flex;align-items:center;gap:6px;flex:none}
+  .learn-size{display:flex;background:var(--bg);border:1px solid var(--line);
+              border-radius:8px;padding:2px}
+  .learn-size button{
+    border:0;background:transparent;padding:4px 9px;border-radius:6px;
+    font:inherit;font-size:11.5px;color:var(--muted);cursor:pointer;transition:.15s;
+  }
+  .learn-size button.on{background:var(--panel);color:var(--brand);font-weight:650;
+                        box-shadow:0 1px 2px rgba(16,24,40,.1)}
+  .learn-ic{
+    width:26px;height:26px;flex:none;display:grid;place-items:center;
+    border:1px solid var(--line);border-radius:7px;background:var(--panel);
+    color:var(--muted);cursor:pointer;transition:.15s;
+    font:inherit;font-size:13px;line-height:1;text-decoration:none;padding:0;
+  }
+  .learn-ic:hover{border-color:#c7d2fe;color:var(--brand);background:var(--brand-soft)}
+  /* 开窗时会把焦点放到 ✕ 上（键盘用户不用先 Tab 就能 Esc/操作），浏览器默认的
+     焦点环是琥珀色双描边，在这个浅色窗口上很跳。统一成品牌色，当成设计的一部分。 */
+  .learn-win :focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+  .learn-body{padding:14px;background:#eceef2}
+  /* width:fit-content 是关键（约束 ④）：不收窄的话手机框会撑满整行，
+     而屏幕是按缩放后的固定宽度，于是左对齐、右边露出一大块。 */
+  .learn-phone{background:#17171d;border-radius:26px;padding:8px;margin:0 auto;
+               width:fit-content;box-shadow:0 8px 22px rgba(16,24,40,.2)}
+  /* margin:0 auto 是兜底：手机框万一被别处的规则撑宽，屏幕也居中，
+     两边均分，而不是全堆在右边。 */
+  .learn-screen{position:relative;border-radius:19px;overflow:hidden;background:#0d0d12;
+                margin:0 auto}
+  .learn-screen iframe{
+    position:absolute;left:0;top:0;border:0;display:block;background:#0d0d12;
+    transform-origin:0 0;
+  }
+  .learn-load{
+    position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:11px;
+    background:#0d0d12;color:#8b8b98;font-size:12.5px;
+  }
+  .learn-load.gone{display:none}
+  .learn-load i{
+    width:20px;height:20px;border:2px solid rgba(255,255,255,.16);
+    border-top-color:#fe2c55;border-radius:50%;animation:sp .8s linear infinite;
+  }
+  .learn-tip{
+    display:flex;align-items:center;gap:8px;padding:9px 14px 11px;
+    border-top:1px solid var(--line-soft);font-size:12px;color:var(--faint);
+    /* 提示条整条都是说明文字，没有任何理由决定窗口有多宽 —— 但它的最大内容
+       宽（那串地址 + 尺寸说明）有 390px，比手机屏还宽，于是它成了窗口宽度的
+       实际决定者。width:0 + min-width:100% 让它「渲染照旧占满一行，但对父级
+       的最大内容宽贡献为 0」。 */
+    width:0;min-width:100%;
+  }
+  .learn-tip .u{color:var(--muted);font-family:ui-monospace,Menlo,monospace;font-size:11.5px;
+                overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .learn-tip .warn{color:var(--warn)}
+  /* 提示语必须**锁成一行**。它是「chrome」的一部分（窗口高度里不含屏幕的那些），
+     而窗口高度又反过来决定屏幕缩放 —— 一旦这行文字被挤到换行，chrome 就变高，
+     缩放却还是按旧值算的，最后整只窗口会比视口高出几个像素被裁掉（实测 900×620
+     下高 624）。锁一行 + 省略号，chrome 就与窗口宽度无关了。 */
+  .learn-tip #learnNote{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+
+  /* 「去学习」是功能入口，不是工具按钮 —— 用主色把它和「新对话/历史」区分开。
+     必须排在 .ghost:hover 之后才盖得住它。 */
+  .go-learn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--brand);border-color:var(--brand);color:#fff;font-weight:650;
+  }
+  .go-learn:hover{background:#4338ca;border-color:#4338ca;color:#fff}
+
+  /* ---------- 左侧导航栏 ----------
+     三个入口（去学习 / 新对话 / 历史）从页头挪到这里，页头只留居中的品牌文案。
+
+     为什么是 z-index:10 而不是更高：这一栏在**内容之下、浮层之上**才是对的 ——
+     历史抽屉是 19/20、去学习浮窗是 61，它们打开时必须盖住导航栏，
+     否则会出现「点历史，抽屉被导航栏压掉一截」。 */
+  .sidenav{
+    position:fixed;left:0;top:0;bottom:0;width:168px;z-index:10;
+    display:flex;flex-direction:column;gap:8px;padding:24px 14px;
+    background:var(--panel);border-right:1px solid var(--line);
+  }
+  .sidenav .ghost{width:100%;padding:9px 12px;font-size:13px;text-align:center}
+  /* 「去学习」是 inline-flex，text-align 管不到它，得单独把内容居中 */
+  .sidenav .go-learn{justify-content:center}
+
+  /* ---------- 求职助手 ---------- */
+  .tabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);
+        border-radius:10px;padding:3px;margin-top:18px;width:fit-content}
+  .tabs button{border:0;background:transparent;padding:7px 18px;border-radius:7px;
+        font:inherit;font-size:13px;color:var(--muted);cursor:pointer;transition:.15s}
+  .tabs button.on{background:var(--panel);color:var(--text);font-weight:600;
+        box-shadow:0 1px 2px rgba(16,24,40,.08)}
+  .view{display:none}
+  .view.on{display:block}
+
+  .pane{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+        box-shadow:0 1px 2px rgba(16,24,40,.04);padding:18px;margin-top:18px}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+  .fld{display:flex;flex-direction:column;gap:6px}
+  .fld.wide{grid-column:1/-1}
+  .fld>label{font-size:12.5px;color:var(--muted);font-weight:650}
+  .fld .hint{font-size:11.5px;color:var(--faint);font-weight:400}
+  .fld input,.fld select,.fld textarea{
+    font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);
+    border-radius:8px;background:#fff;color:var(--text);outline:0;transition:.15s;width:100%}
+  .fld input:focus,.fld select:focus,.fld textarea:focus{
+    border-color:#c7d2fe;box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+  .fld textarea{resize:vertical;min-height:104px;line-height:1.6}
+  .skill-grid{display:flex;flex-direction:column;gap:10px;margin-top:2px}
+  .skgrp{border:1px solid var(--line-soft);border-radius:10px;padding:10px 12px 5px}
+  .skgrp-h{display:flex;align-items:baseline;gap:8px;font-size:12.5px;
+        font-weight:650;margin-bottom:7px}
+  .skgrp-h .n{color:var(--faint);font-weight:400;font-size:11.5px}
+  .sk{display:inline-flex;align-items:baseline;gap:5px;border:1px solid var(--line);
+      background:#fff;border-radius:999px;padding:5px 11px;font-size:12.5px;
+      color:var(--muted);cursor:pointer;margin:0 6px 6px 0;transition:.15s;user-select:none}
+  .sk:hover{border-color:#c7d2fe}
+  .sk.on{background:var(--brand-soft);border-color:#c7d2fe;color:var(--brand);font-weight:600}
+  .sk i{font-style:normal;font-size:10.5px;color:var(--faint)}
+  .sk.on i{color:#818cf8}
+  /* 技能联想输入：标签行 + 输入框 + 下拉候选 */
+  .skill-pick{display:flex;flex-direction:column;gap:8px}
+  .tags{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:32px;
+        border:1px dashed var(--line);border-radius:10px;padding:6px 9px;background:var(--bg)}
+  .tags-empty{font-size:11.5px;color:var(--faint)}
+  .tag{display:inline-flex;align-items:center;gap:5px;background:var(--brand-soft);
+       border:1px solid #c7d2fe;color:var(--brand);border-radius:8px;
+       padding:3px 6px 3px 9px;font-size:12.5px;font-weight:600}
+  .tag b{cursor:pointer;font-weight:700;opacity:.5;font-size:14px;line-height:1}
+  .tag b:hover{opacity:1}
+  .tag-clear{font-size:11.5px;color:var(--faint);cursor:pointer;text-decoration:underline}
+  .tag-clear:hover{color:var(--err)}
+  .ac{position:relative}
+  .ac-panel{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 4px);
+            background:var(--panel);border:1px solid var(--line);border-radius:10px;
+            box-shadow:0 10px 28px rgba(15,23,42,.14);max-height:250px;overflow:auto;padding:4px}
+  .ac-item{display:flex;align-items:baseline;gap:8px;padding:7px 9px;border-radius:7px;
+           cursor:pointer;font-size:13px}
+  .ac-item.act{background:var(--brand-soft)}
+  .ac-item .nm{font-weight:600;color:var(--text)}
+  .ac-item .dm{font-size:11px;color:var(--faint)}
+  .ac-item .pc{margin-left:auto;font-size:11px;color:var(--faint);white-space:nowrap}
+  .ac-item.added .nm::after{content:"已选";margin-left:6px;font-size:10px;
+                            color:var(--brand);border:1px solid #c7d2fe;
+                            border-radius:4px;padding:0 3px}
+  .ac-none{padding:8px 10px;font-size:11.5px;color:var(--faint);line-height:1.7}
+  .acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+  .btn-primary{border:0;background:var(--brand);color:#fff;padding:11px 24px;
+      border-radius:8px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:.15s}
+  .btn-primary:hover{background:#4338ca}
+  .btn-primary:disabled{background:#c7cbd4;cursor:not-allowed}
+  .btn-sec{border:1px solid var(--line);background:var(--panel);color:var(--text);
+      padding:10px 20px;border-radius:8px;font:inherit;font-size:13.5px;
+      font-weight:600;cursor:pointer;transition:.15s}
+  .btn-sec:hover{border-color:#c7d2fe;color:var(--brand)}
+  .btn-sec:disabled{color:var(--faint);cursor:not-allowed;border-color:var(--line)}
+  .acts .tip{font-size:12px;color:var(--faint);margin-left:auto;text-align:right}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);
+      padding:12px 18px 0}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend i{width:12px;height:11px;border-radius:3px;display:inline-block}
+
+  .dimlist{display:flex;flex-direction:column;gap:10px}
+  .dim{border:1px solid var(--line-soft);border-radius:10px;padding:12px 14px;background:#fcfcfd}
+  .dim-h{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:9px}
+  .dim-h b{font-size:13.5px}
+  .lvl{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid}
+  .lvl.meet{background:var(--ok-soft);border-color:#a7f3d0;color:var(--ok)}
+  .lvl.near{background:var(--warn-soft);border-color:#fde68a;color:var(--warn)}
+  .lvl.gap{background:var(--err-soft);border-color:#fecaca;color:var(--err)}
+  .lvl.na{background:var(--bg);border-color:var(--line);color:var(--muted)}
+  .dim-h .num{margin-left:auto;font-size:11.5px;color:var(--faint);
+      font-family:ui-monospace,Menlo,monospace}
+  .gbar{position:relative;height:8px;border-radius:4px;background:var(--line-soft)}
+  .gbar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--brand)}
+  .gbar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:#4f46e5;border-radius:1px}
+  .miss{font-size:12.5px;color:#404652;margin-top:8px;line-height:1.55}
+  .mine{font-size:12.5px;color:var(--ok);margin-top:4px;line-height:1.55}
+
+  .advice{display:flex;flex-direction:column}
+  .adv{display:flex;gap:11px;padding:12px 18px;border-bottom:1px solid var(--line-soft)}
+  .adv:last-child{border-bottom:0}
+  .adv .tag{flex:none;font-size:11px;font-weight:650;padding:2px 8px;border-radius:5px;
+      margin-top:2px;height:fit-content;white-space:nowrap}
+  .tag.gap{background:var(--err-soft);color:var(--err)}
+  .tag.near{background:var(--warn-soft);color:var(--warn)}
+  .tag.strength{background:var(--ok-soft);color:var(--ok)}
+  .tag.todo{background:var(--brand-soft);color:var(--brand)}
+  .tag.target{background:var(--bg);color:var(--muted)}
+  .adv-b{min-width:0;font-size:13px;line-height:1.6;color:#404652}
+  .adv-b b{display:block;color:var(--text);font-size:13.5px;margin-bottom:2px}
+
+  .thr{display:flex;flex-direction:column;gap:9px;padding:14px 18px;font-size:13.5px}
+  .thr .ok{color:var(--ok)}
+  .thr .no{color:var(--warn)}
+
+  /* ---------- 触屏 ---------- */
+  html{-webkit-text-size-adjust:100%}
+  body{-webkit-tap-highlight-color:transparent}
+  .x-hint{display:none}
+  @media (hover:none){
+    .ghost:active,.chip:active{background:var(--brand-soft);border-color:#c7d2fe;color:var(--brand)}
+    .submit:active{background:#4338ca}
+    .hitem:active{background:var(--brand-soft);color:var(--brand)}
+  }
+
+  /* ---------- 手机竖屏 ----------
+     图表不走「把 680 宽的图缩到 340」那条路 —— 那样 12px 的坐标字会变成 6px。
+     几何改由 JS 的 isNarrow() 重排（见下方 hbarMobile 等），这里只管版式与触控尺寸。 */
+  @media (max-width:640px){
+    .wrap{padding:20px 14px calc(60px + env(safe-area-inset-bottom))}
+    header h1{font-size:19px;letter-spacing:-.2px}
+    header p{font-size:12.5px}
+    /* 窄屏上侧边栏改成顶部横向条：375px 的手机上一条 168px 的竖栏会吃掉
+       45% 的宽度，那不是「侧边栏」，是「挡住内容」。
+       用 sticky 而不是 static —— 滚到长答案的中段还想点「新对话」时不用先滚回顶部。 */
+    body{padding-left:0}
+    .sidenav{
+      position:sticky;top:0;bottom:auto;left:auto;
+      width:auto;height:auto;flex-direction:row;gap:6px;padding:10px 14px;
+      border-right:0;border-bottom:1px solid var(--line);
+    }
+    .sidenav .ghost{flex:1;width:auto;padding:11px 10px;font-size:13px;min-height:42px}
+
+    /* 浮窗：窄屏上把内边距收干 —— 省下来的每一像素都还给手机屏 */
+    .learn-body{padding:8px}
+    .learn-phone{padding:6px;border-radius:20px}
+    .learn-screen{border-radius:15px}
+    .learn-bar{padding:8px 8px 8px 11px;gap:7px}
+    .learn-bar .lt{font-size:12.5px}
+    .learn-size button{padding:4px 7px}
+    .learn-tip{padding:8px 11px 10px;gap:6px}
+    .learn-tip .u{display:none}   /* 让位给尺寸说明，窄屏上挤不下两段 */
+
+    /* 徽章挤成一行横向滑动，别占掉半屏高度 */
+    .badges{flex-wrap:nowrap;overflow-x:auto;gap:6px;margin-top:12px;
+            padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .badges::-webkit-scrollbar{display:none}
+    .badge{flex:none;font-size:12px;padding:4px 10px}
+
+    .banner{font-size:13px;padding:11px 13px}
+    form{margin-top:16px}
+    /* 16px 以下 iOS 聚焦输入框会强制放大整页，所以不能沿用 15px */
+    textarea{font-size:16px;padding:14px;min-height:52px}
+    .bar{flex-direction:column;align-items:stretch;gap:10px;padding:10px}
+    .seg{width:100%}
+    .seg button{flex:1;padding:10px 4px;font-size:13px}
+    .submit{width:100%;padding:12px;font-size:15px}
+
+    .examples{gap:7px;margin-top:12px}
+    .chip{padding:9px 13px;font-size:13px}
+    .chip.sm{padding:8px 12px;font-size:12.5px}
+
+    #out{margin-top:18px}
+    .card{margin-bottom:12px}
+    .card-h{padding:11px 14px;flex-wrap:wrap;gap:6px;font-size:12.5px}
+    .card-h .meta{width:100%;margin-left:0}
+    .card-b{padding:14px}
+    .route{font-size:12px}
+    .inherit{font-size:12.5px}
+
+    .md{font-size:14px}
+    .md table{font-size:12.5px}
+    .md th,.md td{padding:6px 8px;white-space:normal;word-break:break-word}
+    .kpi{padding:6px 0}
+    .kpi-v{font-size:32px}
+    .kpi-l{font-size:12.5px}
+
+    .chart{padding:10px 8px 4px}
+    .chart.scroll{max-height:58vh}
+    .insights{padding:12px 14px}
+    .insights li{font-size:13px}
+
+    table.res{font-size:12.5px}
+    table.res th,table.res td{padding:8px 10px}
+    table.res td{max-width:190px}
+    .x-hint{display:block;font-size:11.5px;color:var(--faint);padding:7px 12px;
+            background:#fafbfc;border-top:1px solid var(--line-soft)}
+
+    .hit{padding:12px;border-radius:9px}
+    .hit-h b{font-size:13px}
+    .hit-t{font-size:13px}
+    .hit-t.collapsed{max-height:78px}
+    .toggle{padding:9px 0 0;font-size:13px}
+
+    pre.sql{font-size:11.5px;padding:12px 14px;line-height:1.65}
+    details.explain summary{padding:12px 14px;font-size:13px}
+    .ex-b{padding:0 14px 14px}
+    .ex-row{font-size:12.5px}
+    .fb{padding:10px 14px;gap:7px}
+    .fb .ghost{padding:10px 12px;font-size:13px;min-height:40px}
+    .fb-msg{margin-left:0;width:100%}
+    .sugg{gap:7px;margin-bottom:14px}
+
+    .drawer{width:min(312px,86vw)}
+    .hitem{padding:11px;font-size:13.5px}
+
+    /* 求职助手：单列、控件放大到能点、按钮通栏 */
+    .tabs{width:100%}
+    .tabs button{flex:1;padding:10px 6px;font-size:13.5px}
+    .pane{padding:14px}
+    .frow{grid-template-columns:1fr;gap:10px}
+    .fld input,.fld select{font-size:16px}   /* 同 textarea：防 iOS 聚焦放大 */
+    .fld textarea{font-size:16px;min-height:120px}
+    .sk{padding:8px 13px;font-size:13px;margin:0 6px 7px 0}
+    .skill-pick{gap:9px}
+    .tag{padding:5px 8px 5px 11px;font-size:13px}
+    .tag b{font-size:17px;padding:0 2px}          /* 触屏上 × 要够大才点得中 */
+    .ac-panel{max-height:44vh}
+    .ac-item{padding:11px 10px;font-size:14px}
+    .acts{flex-direction:column;align-items:stretch}
+    .btn-primary,.btn-sec{width:100%;padding:13px;font-size:15px}
+    .acts .tip{margin-left:0;text-align:center;order:-1}
+    .legend{padding:10px 14px 0;gap:12px}
+    .dim{padding:11px 12px}
+    .dim-h .num{width:100%;margin-left:0}
+    .adv{padding:12px 14px;gap:9px}
+    .thr{padding:12px 14px}
+  }
+
+  @media (max-width:380px){
+    .wrap{padding:16px 10px calc(52px + env(safe-area-inset-bottom))}
+    header h1{font-size:17.5px}
+    .md{font-size:13.5px}
+    .card-b{padding:12px}
+    .hit{padding:11px}
+  }
+</style>
+<!-- ===== 发布版注入开始（tools/web_build.py 生成，勿手改） ===== -->
+<link rel="stylesheet" href="ui/keypanel.css">
+<script src="vendor/sql-wasm.js"></script>
+<script src="engine/db.js"></script>
+<script src="engine/text.js"></script>
+<script src="engine/retrieval.js"></script>
+<script src="engine/metrics.js"></script>
+<script src="engine/session.js"></script>
+<script src="engine/examples.js"></script>
+<script src="engine/chart.js"></script>
+<script src="engine/ask.js"></script>
+<script src="engine/profile.js"></script>
+<script src="engine/resume.js"></script>
+<script src="engine/llm.js"></script>
+<script src="engine/api.js"></script>
+<script src="ui/keypanel.js"></script>
+<script src="ui/boot.js"></script>
+<!-- ===== 发布版注入结束 ===== -->
+</head>
+<body data-page-node-id="F7p96QptGucEA3BTKA9HcC">
+<div class="bgfx" id="bgfx" aria-hidden="true" data-page-node-id="833VBfRddbIMH28VZytGW9"></div>
+
+<!-- 左侧导航栏：三个入口（去学习 / 新对话 / 历史）从页头挪到这里。
+     放在 .wrap **之前**，是为了让键盘 Tab 的顺序跟视觉顺序一致 ——
+     导航在左边、在阅读顺序的前面，焦点也该先走到它。 -->
+<nav class="sidenav" id="sidenav" aria-label="主导航" data-page-node-id="C2p7chAhmumKs21Ty4uwgP">
+  <button class="ghost go-learn" id="learnBtn" type="button">去学习</button>
+  <button class="ghost" id="newChat" type="button" data-page-node-id="TH3qT4d9yXIi5HuhE5pg3U">新对话</button>
+  <button class="ghost" id="histBtn" type="button" data-page-node-id="hjeaPH7doGTQAizg6Iycac">历史</button>
+</nav>
+
+<div class="wrap" data-page-node-id="iDUD3XSdlgYLfxdBNCVbnw">
+  <header data-page-node-id="EBrNXatNZdhpFCvSanPJ98">
+    <div class="head-row" data-page-node-id="GrUnCtOLM2QmgUXYku7E73">
+      <div class="grow" data-page-node-id="SVyBmfRcBROimpTAzLmowZ">
+        <h1 data-page-node-id="2tSko462n8A1GfX6CJg0vH">求职，我帮你</h1>
+        <p data-page-node-id="hq3QqKFVGk9HLjSqbsM7TV">国内 · 2026 年岗位 · RAG 原文检索 + Text-to-SQL 结构化统计</p>
+      </div>
+    </div>
+    <div class="badges" id="badges" data-page-node-id="yGSlmzqDllJkWHVBkfAhPO"></div>
+    <div class="banner" id="banner" data-page-node-id="UVgrK2RKdBXvpOzS5DgoXN"></div>
+  </header>
+
+  <div class="tabs" id="tabs" data-page-node-id="ZWBODsz9sqh6nGoHBVfqie">
+    <button type="button" data-view="ask" class="on" data-page-node-id="AuThWCrttir0Atpx63j0vG">查数据</button>
+    <button type="button" data-view="career" data-page-node-id="KvfL7JDBmBPHyLl3dnEC4q">求职助手</button>
+  </div>
+
+  <div class="view on" id="viewAsk" data-page-node-id="tkdJz903CNLMYV8y32y61x">
+  <form id="form" autocomplete="off" data-page-node-id="kwGbqtCrGg18cCDlCnn2jx">
+    <div class="box" data-page-node-id="mh7UdOEoeflND8srByiqjo">
+      <textarea id="q" rows="1" placeholder="问点什么，比如：真 AI PM 占比是多少？／ RAG 经验在 JD 里一般怎么写？"></textarea>
+      <div class="bar" data-page-node-id="EtAWw5VOkMuGZ28Y3xhxsA">
+        <div class="seg" id="seg" data-page-node-id="WbiWe2ZVxeD2yRZAYVPBDf">
+          <button type="button" data-mode="auto" class="on" data-page-node-id="83U7VcPHYNonBom7w2Jq1V">自动路由</button>
+          <button type="button" data-mode="sql" data-page-node-id="cjQF6GSZ7QdiTAEQiHZVZS">结构化统计</button>
+          <button type="button" data-mode="rag" data-page-node-id="5LLUbOLlXTHYt3pvU7v33B">原文检索</button>
+        </div>
+        <button class="submit" id="go" type="submit" data-page-node-id="shvROpAf2f7TVS8Ryt1cao">提问</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="examples" id="examples" data-page-node-id="ACZbfFH7FwjQsmJ6jnF9b6"></div>
+  <div id="out" data-page-node-id="FChwZcppX2qOIF2upsl9tH"></div>
+  </div>
+
+  <div class="view" id="viewCareer" data-page-node-id="h05fYHSQxEyV5sFoFlAzz7">
+    <div class="pane" data-page-node-id="pghCwvKvwwKRD2RJ9lQ65u">
+      <div class="frow" data-page-node-id="yV1UQM9xIL3Odwlg4wiBGf">
+        <div class="fld" data-page-node-id="BeAPqHfkqBEN7adk71AEco">
+          <label for="cDir" data-page-node-id="GnhKCBGq72fKvg1f73JnGl">目标岗位方向</label>
+          <select id="cDir" data-page-node-id="IHa3jzBnhAzQSnP46NoSxp"></select>
+          <span class="hint" id="cDirHint" data-page-node-id="JGkCfI57wGHDoewHJashaK"></span>
+        </div>
+        <div class="fld" data-page-node-id="NGHrpbT9elFJpbNPnd8Y1I">
+          <label for="cYears" data-page-node-id="a1EpODsJ7PHL4aZfUrf0iS">工作年限</label>
+          <input id="cYears" type="number" min="0" max="40" step="1" placeholder="如 3" data-page-node-id="Jy2azXealhdvKX7FaqFHkY">
+          <span class="hint" data-page-node-id="vzL1QvhdUBk7EVmiE7pGKe">只用于校验年限门槛，不参与能力打分</span>
+        </div>
+        <div class="fld" data-page-node-id="hGGHitVgtGL5tgxRS8Tif5">
+          <label for="cTitle" data-page-node-id="SfOqEvBdNAjXODrDdYUYxF">当前职位</label>
+          <input id="cTitle" type="text" placeholder="如 AI 产品经理" data-page-node-id="495JRMVur1fhCcGSHyclhM">
+        </div>
+        <div class="fld" data-page-node-id="NBC1FvlUImk4AGV0NTmUR7">
+          <label for="cCity" data-page-node-id="sDnIFG56e1d3j1pEetEsCl">期望城市</label>
+          <select id="cCity" data-page-node-id="u0xH1GbEBbKvngBkxMH9an"><option value="" data-page-node-id="Ru9Gj3dcXYbH8g1h12BOXF">不限 / 暂不确定</option></select>
+          <span class="hint" id="cCityHint" data-page-node-id="hGCbcNL71wDKZJoHwrdqhw"></span>
+        </div>
+      </div>
+
+      <div class="fld wide" style="margin-top:14px" data-page-node-id="Lj2ef91UYiX2aEzSPGGuDH">
+        <label data-page-node-id="Ct3JeVjEizjyGYaDB306u7">你具备的技能　<span class="hint" data-page-node-id="8usfd7yW9vAyP3bjoqcAfA">输入关键词从知识库联想添加（写「知识库」能命中 RAG/知识库）；下方网格也能直接点选，括号里是全库提及率</span></label>
+        <div class="skill-pick" data-page-node-id="XDKHTupRhaXUdRnXFsNoVV">
+          <div class="tags" id="cSkillTags" data-page-node-id="Ejh4Luh1ho55g3KBbLvanc"></div>
+          <div class="ac" data-page-node-id="ujzgqxEmIVa83dNVMuq5l2">
+            <input id="cSkillInput" type="text" autocomplete="off"
+                   placeholder="输入技能关键词后回车添加，如 知识库 / 埋点 / coze" data-page-node-id="hDD2WNrTmBEjRrwKuf6GTq">
+            <div class="ac-panel" id="cSkillSug" hidden data-page-node-id="ikirWKHDzYdB92S6xyyHo3"></div>
+          </div>
+        </div>
+        <div class="skill-grid" id="cSkills" data-page-node-id="3BYpe2Cuils8f4aK4IsvI4"></div>
+      </div>
+
+      <div class="fld wide" style="margin-top:14px" data-page-node-id="5Yt26TFGBbXUbRW6kcAICs">
+        <label for="cExp" data-page-node-id="DuIiEnZuMZHlfGH40xz71r">工作 / 项目经历　<span class="hint" data-page-node-id="UO8xpJLWFUTvBaEWU099kr">粘简历段落或直接口述都行，里面的技能词会被自动识别</span></label>
+        <textarea id="cExp" placeholder="例：在 SaaS 公司做产品经理 3 年，负责企业知识库问答产品的需求分析和上线，跨部门推动研发交付，做过 AB 实验和埋点分析，写过 PRD，产品上线后日均调用 3000 次。"></textarea>
+      </div>
+
+      <div class="acts" data-page-node-id="K3PSJi48xoz6qhzQVrhckn">
+        <button class="btn-primary" id="cGo" type="button" data-page-node-id="WyNVXSctv8XjMcmFaky3Gv">生成能力画像</button>
+        <button class="btn-sec" id="cResumeBtn" type="button" data-page-node-id="2eGlADmo4u7WUJox4CU1YO">生成优化版简历</button>
+        <span class="tip" id="cTip" data-page-node-id="Lxq8DOwBWFiixpnadFJkql">画像为纯统计计算，不调用模型</span>
+      </div>
+    </div>
+    <div id="careerOut" data-page-node-id="Mk1hNaMKeBnqHnD2YjbApk"></div>
+  </div>
+</div>
+
+<div class="mask" id="mask" data-page-node-id="WwjVcYlUfW9dR4oMiIekkr"></div>
+<aside class="drawer" id="drawer" data-page-node-id="HKTnjadM6byRC6iXhIgNnO">
+  <div class="drawer-h" data-page-node-id="4YSBsBFbFPN4unY2AsyMBb">查询历史<button class="ghost" id="histClose" data-page-node-id="OvAKu3FHzYVR13NvOWCBbe">关闭</button></div>
+  <div class="drawer-b" id="histBody" data-page-node-id="fAAfcfeAmlX380sVBXpdn1"></div>
+  <div class="drawer-f" id="histFoot" data-page-node-id="PBOwuY3SgL6oZdfcZFyX3L">历史只存在这台浏览器本地，不上传。</div>
+</aside>
+
+<!-- 「去学习」浮窗：站外的移动端刷题应用，手机尺寸，浮在本站之上。
+     **刻意不做遮罩**：它是一个可以随便拖动的浮窗，不是模态框。没有遮罩
+     就不该锁页面滚动、也不该「点空白处关窗」（那是模态框的交互，用户会
+     以为点坏了）—— 关窗只走 ✕ 与 Esc 两条路。也因此去掉了 aria-modal：
+     页面对辅助技术来说是「可继续操作的」，不是被对话框拦住。 -->
+<section class="learn-win" id="learnWin" role="dialog"
+         aria-label="AI 产品经理刷题">
+  <div class="learn-bar" id="learnBar">
+    <div class="lt"><i></i><span class="ltt">AI 产品经理刷题</span></div>
+    <div class="lsp"></div>
+    <div class="learn-acts">
+      <div class="learn-size" id="learnSize">
+        <button type="button" data-size="phone" class="on">手机</button>
+        <button type="button" data-size="pad">平板</button>
+      </div>
+      <a class="learn-ic" id="learnOut" href="https://cain0624.github.io/ai-pm-app/"
+         target="_blank" rel="noopener" title="在新标签打开">↗</a>
+      <button class="learn-ic" id="learnReload" type="button" title="重新加载">↻</button>
+      <button class="learn-ic" id="learnClose" type="button" title="关闭">✕</button>
+    </div>
+  </div>
+  <div class="learn-body">
+    <div class="learn-phone">
+      <div class="learn-screen" id="learnScreen">
+        <!-- src 故意空着（真地址挂在 data-src 上）：不开窗就不去拉对方站点，
+             否则每次打开本站都会顺带把别人的整站拉一遍。 -->
+        <div class="learn-load" id="learnLoad"><i></i>正在加载外部应用…</div>
+        <iframe id="learnFrame" title="AI 产品经理刷题" allowfullscreen
+                data-src="https://cain0624.github.io/ai-pm-app/"></iframe>
+      </div>
+    </div>
+  </div>
+  <div class="learn-tip">
+    <span class="u">cain0624.github.io/ai-pm-app</span>
+    <div class="lsp"></div>
+    <span id="learnNote">视口 390×844</span>
+  </div>
+</section>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const trunc = (s, n) => { s = String(s ?? ""); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
+
+const PALETTE = ["#4f46e5","#0d9488","#d97706","#db2777","#2563eb",
+                 "#65a30d","#7c3aed","#dc2626","#0891b2","#c2410c"];
+
+function fmtNum(v){
+  if(v === null || v === undefined || v === "") return "—";
+  const n = typeof v === "number" ? v : parseFloat(String(v).replace(/,/g, ""));
+  if(isNaN(n)) return String(v);
+  return Number.isInteger(n)
+    ? n.toLocaleString("zh-CN")
+    : n.toLocaleString("zh-CN", {maximumFractionDigits: 1});
+}
+const toNums = vals => vals.map(v => {
+  const n = typeof v === "number" ? v : parseFloat(String(v).replace(/,/g, ""));
+  return isNaN(n) ? 0 : n;
+});
+
+/* 极简 Markdown 渲染：只处理模型真正会用到的几种语法 */
+function md(src){
+  let t = esc(src || "");
+  t = t.replace(/```[\s\S]*?```/g, m => "<pre class='md-pre'>" + esc(m.replace(/```\w*\n?/g,"")) + "</pre>");
+  t = t.replace(/(^\|.+\|\s*$\n^\|[\s:|-]+\|\s*$\n(?:^\|.*\|\s*$\n?)*)/gm, blk => {
+    const lines = blk.trim().split("\n");
+    const cells = l => l.trim().replace(/^\||\|$/g,"").split("|").map(x=>x.trim());
+    const head = cells(lines[0]);
+    const body = lines.slice(2).map(cells);
+    return "<table><thead><tr>" + head.map(h=>`<th>${h}</th>`).join("") +
+           "</tr></thead><tbody>" + body.map(r=>"<tr>"+r.map(c=>`<td>${c}</td>`).join("")+"</tr>").join("") +
+           "</tbody></table>";
+  });
+  t = t.replace(/^###\s+(.+)$/gm, "<h3>$1</h3>").replace(/^##\s+(.+)$/gm, "<h3>$1</h3>");
+  t = t.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  t = t.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+  t = t.replace(/^[-*]\s+(.+)$/gm, "<li>$1</li>").replace(/(?:<li>.*<\/li>\n?)+/g, m=>"<ul>"+m+"</ul>");
+  return t.split(/\n{2,}/).map(p => /^\s*<(ul|table|h3|pre)/.test(p) ? p : `<p>${p.replace(/\n/g,"<br>")}</p>`).join("");
+}
+
+function highlightSQL(s){
+  const kw = /\b(SELECT|FROM|WHERE|GROUP BY|ORDER BY|HAVING|JOIN|LEFT|RIGHT|INNER|ON|AS|AND|OR|NOT|IN|LIKE|LIMIT|OFFSET|DISTINCT|COUNT|SUM|AVG|ROUND|MAX|MIN|WITH|CASE|WHEN|THEN|ELSE|END|DESC|ASC|BETWEEN|IS|NULL|UNION|ALL|COALESCE)\b/gi;
+  return esc(s).replace(kw, m => `<span class="kw">${m.toUpperCase()}</span>`);
+}
+
+const KIND = {meta:"岗位信息", duty:"岗位职责", req:"任职要求", full:"岗位描述"};
+
+/* ---------- 状态 ---------- */
+let mode = "auto";
+let sid = null;
+document.querySelectorAll("#seg button").forEach(b => b.onclick = () => {
+  mode = b.dataset.mode;
+  document.querySelectorAll("#seg button").forEach(x => x.classList.toggle("on", x === b));
+});
+
+/* 后端未启动时的兜底快照，保证直接打开本文件也能看到界面 */
+const FALLBACK = {
+  jobs:1367, companies:39, skills:47, months:9, metrics:9, examples_learned:0,
+  llm_model:"deepseek-ai/DeepSeek-V4-Flash", llm_ready:false, offline:true
+};
+const FALLBACK_EX = [
+  "真 AI PM 占比是多少？哪些公司最高？","各公司岗位数排行",
+  "同时要求 RAG 和 Agent 的岗位有哪些？","技能提及率 Top10",
+  "北京有多少个要求 RAG 的岗位？","RAG 经验在 JD 里一般怎么写？",
+  "任职要求里通常需要具备哪些能力？","大模型评测方向的岗位要求是什么样的？"
+];
+
+/* ---------- 图表：纯 SVG，不引库 ----------
+   移动端不做「同一个 680 宽 viewBox 缩小」——那会让 12px 的坐标字变成 6px。
+   而是按屏宽换一整套几何：窄屏 viewBox 直接 340 宽，条形图改成两行式。 */
+const isNarrow = () => window.matchMedia("(max-width: 640px)").matches;
+/* width:100% + height:auto + max-width，让 SVG 精确铺满容器且不放大到失真 */
+const svgBox = (W, H, inner) =>
+  `<svg viewBox="0 0 ${W} ${H}" style="max-width:${W}px" role="img">${inner}</svg>`;
+
+function kpiHTML(spec){
+  return `<div class="chart"><div class="kpi">
+    <div class="kpi-v">${esc(spec.value)}${spec.unit?`<span class="unit">${esc(spec.unit)}</span>`:""}</div>
+    <div class="kpi-l">${esc(spec.label || spec.title)}</div>
+  </div></div>`;
+}
+
+/* 窄屏专用：分类名独占一行（不截断），条撑满可用宽度，数值右对齐 */
+function hbarMobile(spec){
+  const xs = spec.x.values, s = spec.series[0], vals = toNums(s.values);
+  const W = 340, max = Math.max(...vals, 1), rowH = 42, padT = 4, trackW = W - 4;
+  const H = padT * 2 + rowH * xs.length;
+  let g = "";
+  xs.forEach((lab, i) => {
+    const y = padT + i * rowH;
+    const w = Math.max(3, trackW * vals[i] / max);
+    g += `<text x="2" y="${y + 13}" font-size="12.5" fill="#404652">${esc(trunc(lab, 16))}</text>`
+      +  `<text x="${W - 2}" y="${y + 13}" text-anchor="end" font-size="12" font-weight="600" fill="#6b7280">${esc(fmtNum(s.values[i]))}</text>`
+      +  `<rect x="2" y="${y + 20}" width="${trackW}" height="9" rx="4.5" fill="#f0f1f3"></rect>`
+      +  `<rect x="2" y="${y + 20}" width="${w.toFixed(1)}" height="9" rx="4.5" fill="${PALETTE[i % PALETTE.length]}" opacity=".9"></rect>`;
+  });
+  return svgBox(W, H, g);
+}
+
+function hbarSVG(spec){
+  const xs = spec.x.values, s = spec.series[0], vals = toNums(s.values);
+  const max = Math.max(...vals, 1);
+  const rowH = 26, top = 6, labelW = 170, right = 104, W = 680;
+  const plotW = W - labelW - right, H = top * 2 + rowH * xs.length;
+  let g = "";
+  xs.forEach((lab, i) => {
+    const y = top + i * rowH, w = Math.max(2, plotW * vals[i] / max);
+    g += `<text x="${labelW - 8}" y="${y + 14}" text-anchor="end" font-size="12" fill="#404652">${esc(trunc(lab, 11))}</text>`
+      +  `<rect x="${labelW}" y="${y + 5}" width="${w.toFixed(1)}" height="14" rx="3" fill="${PALETTE[i % PALETTE.length]}" opacity=".88"></rect>`
+      +  `<text x="${labelW + w + 7}" y="${y + 16}" font-size="11.5" fill="#6b7280">${esc(fmtNum(s.values[i]))}</text>`;
+  });
+  return svgBox(W, H, g);
+}
+
+function barSVG(spec){
+  const narrow = isNarrow();
+  const xs = spec.x.values, s = spec.series[0], vals = toNums(s.values);
+  const max = Math.max(...vals, 1);
+  const W = narrow ? 340 : 680, H = narrow ? 214 : 250;
+  const padT = narrow ? 22 : 18, padB = narrow ? 40 : 46, plotH = H - padT - padB;
+  const step = W / Math.max(xs.length, 1);
+  const bw = Math.min(narrow ? 36 : 48, step * 0.6);
+  const labN = narrow ? 4 : 6;
+  let g = "";
+  xs.forEach((lab, i) => {
+    const h = Math.max(2, plotH * vals[i] / max);
+    const x = i * step + (step - bw) / 2, y = padT + plotH - h;
+    g += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${PALETTE[i % PALETTE.length]}" opacity=".88"></rect>`
+      +  `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 5).toFixed(1)}" text-anchor="middle" font-size="${narrow ? 10.5 : 11}" fill="#6b7280">${esc(fmtNum(s.values[i]))}</text>`
+      +  `<text x="${(x + bw / 2).toFixed(1)}" y="${padT + plotH + 16}" text-anchor="middle" font-size="${narrow ? 11 : 11.5}" fill="#404652">${esc(trunc(lab, labN))}</text>`;
+  });
+  return svgBox(W, H, g);
+}
+
+function groupedSVG(spec){
+  const narrow = isNarrow();
+  const xs = spec.x.values, A = spec.series[0], B = spec.series[1];
+  const va = toNums(A.values), vb = toNums(B.values);
+  const max = Math.max(...va, ...vb, 1);
+  const W = narrow ? 340 : 680, H = narrow ? 232 : 268;
+  const padT = 18, padB = narrow ? 50 : 52, plotH = H - padT - padB;
+  const step = W / Math.max(xs.length, 1);
+  const bw = Math.min(narrow ? 17 : 30, step * 0.3);
+  const labN = narrow ? 4 : 7;
+  let g = "";
+  xs.forEach((lab, i) => {
+    const cx = i * step + step / 2;
+    [[va[i], PALETTE[0], -bw - 2], [vb[i], PALETTE[1], 2]].forEach(([v, c, off]) => {
+      const h = Math.max(2, plotH * v / max), x = cx + off, y = padT + plotH - h;
+      g += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${c}" opacity=".88"></rect>`;
+    });
+    g += `<text x="${cx.toFixed(1)}" y="${padT + plotH + 16}" text-anchor="middle" font-size="${narrow ? 11 : 11.5}" fill="#404652">${esc(trunc(lab, labN))}</text>`;
+  });
+  const ly = H - 14, x2 = narrow ? 168 : 140;
+  g += `<rect x="8" y="${ly - 9}" width="10" height="10" rx="2" fill="${PALETTE[0]}"></rect>`
+    +  `<text x="24" y="${ly}" font-size="11.5" fill="#6b7280">${esc(trunc(A.label, narrow ? 10 : 20))}</text>`
+    +  `<rect x="${x2}" y="${ly - 9}" width="10" height="10" rx="2" fill="${PALETTE[1]}"></rect>`
+    +  `<text x="${x2 + 16}" y="${ly}" font-size="11.5" fill="#6b7280">${esc(trunc(B.label, narrow ? 10 : 20))}</text>`;
+  return svgBox(W, H, g);
+}
+
+function lineSVG(spec){
+  const narrow = isNarrow();
+  const xs = spec.x.values, s = spec.series[0], vals = toNums(s.values);
+  const W = narrow ? 340 : 680, H = narrow ? 224 : 250;
+  const padL = narrow ? 40 : 48, padR = narrow ? 12 : 18, padT = narrow ? 20 : 18;
+  const padB = narrow ? 38 : 40;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const max = Math.max(...vals), min = Math.min(...vals), span = (max - min) || 1;
+  const px = i => padL + plotW * (xs.length > 1 ? i / (xs.length - 1) : 0.5);
+  const py = v => padT + plotH * (1 - (v - min) / span);
+  let g = "";
+  for(let k = 0; k <= 2; k++){
+    const v = min + span * k / 2, y = py(v);
+    g += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="#f0f1f3"></line>`
+      +  `<text x="${padL - 6}" y="${(y + 4).toFixed(1)}" text-anchor="end" font-size="${narrow ? 10 : 11}" fill="#9ca3af">${esc(fmtNum(Math.round(v)))}</text>`;
+  }
+  const pts = vals.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(" ");
+  g += `<polyline points="${pts}" fill="none" stroke="${PALETTE[0]}" stroke-width="2.2" stroke-linejoin="round"></polyline>`;
+  vals.forEach((v, i) => {
+    g += `<circle cx="${px(i).toFixed(1)}" cy="${py(v).toFixed(1)}" r="3.2" fill="#fff" stroke="${PALETTE[0]}" stroke-width="2"></circle>`;
+  });
+  const marks = new Set([0, Math.floor((xs.length - 1) / 2), xs.length - 1]);
+  [...marks].forEach(i => {
+    g += `<text x="${px(i).toFixed(1)}" y="${H - 16}" text-anchor="middle" font-size="${narrow ? 10.5 : 11.5}" fill="#404652">${esc(trunc(xs[i], narrow ? 6 : 9))}</text>`;
+  });
+  return svgBox(W, H, g);
+}
+
+function donutSVG(spec){
+  const narrow = isNarrow();
+  const xs = spec.x.values, s = spec.series[0], vals = toNums(s.values);
+  const total = vals.reduce((a, b) => a + b, 0) || 1;
+  const W = narrow ? 340 : 680;
+  /* 窄屏：圆环居中置顶，图例挪到下方整行 —— 侧边图例在 340 宽里放不下 */
+  const cx = narrow ? W / 2 : 112, cy = narrow ? 84 : 112;
+  const r = narrow ? 54 : 74, sw = narrow ? 22 : 30;
+  const C = 2 * Math.PI * r;
+  let acc = 0, g = "";
+  vals.forEach((v, i) => {
+    const len = C * v / total;
+    g += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${PALETTE[i % PALETTE.length]}"`
+      +  ` stroke-width="${sw}" stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}"`
+      +  ` stroke-dashoffset="${(-acc).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"></circle>`;
+    acc += len;
+  });
+  g += `<text x="${cx}" y="${cy - 2}" text-anchor="middle" font-size="${narrow ? 18 : 20}" font-weight="650" fill="#1a1d21">${esc(fmtNum(total))}</text>`
+    +  `<text x="${cx}" y="${cy + 16}" text-anchor="middle" font-size="11.5" fill="#9ca3af">合计</text>`;
+  const x0 = narrow ? 8 : 238, step = narrow ? 26 : 24, y0 = narrow ? 162 : 34;
+  const restW = narrow ? W - 16 : W - 238 - 12;
+  const labN = narrow ? Math.max(8, Math.floor(restW / 13) - 6) : 16;
+  xs.forEach((lab, i) => {
+    const y = y0 + i * step;
+    g += `<rect x="${x0}" y="${y - 9}" width="10" height="10" rx="2" fill="${PALETTE[i % PALETTE.length]}"></rect>`
+      +  `<text x="${x0 + 16}" y="${y}" font-size="12.5" fill="#404652">${esc(trunc(lab, labN))}</text>`
+      +  `<text x="${W - 12}" y="${y}" text-anchor="end" font-size="${narrow ? 11.5 : 12}" fill="#6b7280">${esc(fmtNum(s.values[i]))}　${(vals[i] / total * 100).toFixed(1)}%</text>`;
+  });
+  const H = narrow ? Math.max(190, y0 + xs.length * step + 10)
+                   : Math.max(236, 34 + xs.length * 24 + 12);
+  return svgBox(W, H, g);
+}
+
+const CHART_NAME = {kpi:"单值", bar:"柱状图", hbar:"条形排行", line:"趋势折线",
+                    donut:"构成占比", grouped_bar:"多系列对比"};
+
+function chartBody(spec){
+  if(!isNarrow())
+    return `<div class="chart${["hbar","donut"].includes(spec.type) ? " scroll" : ""}">${
+      spec.type === "hbar" ? hbarSVG(spec) :
+      spec.type === "bar" ? barSVG(spec) :
+      spec.type === "grouped_bar" ? groupedSVG(spec) :
+      spec.type === "line" ? lineSVG(spec) :
+      spec.type === "donut" ? donutSVG(spec) : ""}</div>`;
+  /* 窄屏：条形排行换成两行式，其余仍是 SVG，但几何已按 340 宽重排 */
+  if(spec.type === "hbar")
+    return `<div class="chart scroll">${hbarMobile(spec)}</div>`;
+  return `<div class="chart${spec.type === "donut" ? " scroll" : ""}">${
+    spec.type === "kpi" ? kpiHTML(spec) :
+    spec.type === "bar" ? barSVG(spec) :
+    spec.type === "grouped_bar" ? groupedSVG(spec) :
+    spec.type === "line" ? lineSVG(spec) :
+    spec.type === "donut" ? donutSVG(spec) : ""}</div>`;
+}
+
+function chartCard(spec){
+  if(!spec) return "";
+  const body = spec.type === "kpi" ? kpiHTML(spec) : chartBody(spec);
+  return `<div class="card">
+    <div class="card-h"><span class="dot" style="background:#0d9488"></span>可视化
+      <span class="pill">${esc(CHART_NAME[spec.type] || spec.type)}</span>
+      <span class="meta">${spec.truncated ? "已截取前 " + spec.shown + " 项" : (spec.x ? esc(spec.x.label) + " × " + esc((spec.series[0]||{}).label || "") : "")}</span></div>
+    <div id="chartBody">${body}</div>
+  </div>`;
+}
+
+function insightsCard(lines){
+  if(!lines || !lines.length) return "";
+  return `<div class="card">
+    <div class="card-h"><span class="dot" style="background:#d97706"></span>自动洞察
+      <span class="meta">由结果集直接算出，未调用模型</span></div>
+    <div class="insights"><ul>${lines.map(l => `<li>${esc(l)}</li>`).join("")}</ul></div>
+  </div>`;
+}
+
+/* ---------- 结构化统计卡片 ---------- */
+function renderSQL(s){
+  if(!s) return "";
+  if(!s.ok) return `<div class="card"><div class="card-h"><span class="dot" style="background:var(--err)"></span>结构化统计未完成</div>
+    <div class="card-b"><div class="err">${esc(s.error||"")}</div>${s.sql?`<pre class="sql" style="margin-top:12px">${highlightSQL(s.sql)}</pre>`:""}</div></div>`;
+
+  let rows = "";
+  if(s.rows && s.rows.length){
+    const head = s.cols.map(c=>`<th>${esc(c)}</th>`).join("");
+    const body = s.rows.slice(0,40).map(r=>"<tr>"+r.map(v=>`<td title="${esc(v)}">${esc(fmtNum(v))}</td>`).join("")+"</tr>").join("");
+    rows = `<div class="scroll"><table class="res"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  }else{
+    rows = `<div class="card-b"><div class="empty">查询无结果</div></div>`;
+  }
+  const srcTag = s.source === "metric"
+    ? `<span class="pill ok">指标层命中 · 未调用模型</span>`
+    : ((s.fewshot && s.fewshot.length) ? `<span class="pill">few-shot ×${s.fewshot.length}</span>` : "");
+  return `<div class="card">
+    <div class="card-h"><span class="dot" style="background:var(--ok)"></span>结构化统计${srcTag}
+      <span class="meta">${s.rows.length} 行${s.elapsed_ms?` · ${s.elapsed_ms}ms`:""}</span></div>
+    <div class="card-b md">${md(s.answer)}</div>
+    <div class="card-b tight" style="border-top:1px solid var(--line-soft)">${rows}</div>
+    ${explainBlock(s.explain, s)}
+    <div class="fb" data-fb-row>
+      <span class="fb-l">这个结果</span>
+      <button class="ghost" data-fb="correct">准确</button>
+      <button class="ghost" data-fb="wrong">有问题</button>
+      <button class="ghost" data-csv>导出 CSV</button>
+      <span class="fb-msg"></span>
+    </div>
+  </div>`;
+}
+
+/* 口径检视：对标 Spotter 的 Answer Explainer / Cortex Analyst 的 SQL 可检视 */
+function explainBlock(ex, s){
+  if(!ex) return "";
+  const kindLabel = ex.kind === "metric" ? "指标层" : "模型生成";
+  let rows = "";
+  if(ex.kind === "metric"){
+    rows = (ex.definition ? `<div class="ex-row"><b>口径</b>：${esc(ex.definition)}</div>` : "")
+         + (ex.key ? `<div class="ex-row"><b>指标键</b>：<code>${esc(ex.key)}</code></div>` : "");
+  }else{
+    if(ex.fewshot && ex.fewshot.length)
+      rows += `<div class="ex-row"><b>参考样例</b>：${ex.fewshot.map(x=>esc(x)).join("　·　")}</div>`;
+    if(ex.attempts && ex.attempts.length > 1)
+      rows += `<div class="ex-row"><b>生成轮次</b>：共 ${ex.attempts.length} 次（前一两次预检未通过）</div>`
+           +  ex.attempts.filter(a=>!a.ok).map((a,i)=>`<div class="ex-att">✗ ${esc(a.error||"")}\n${esc(a.sql)}</div>`).join("");
+  }
+  if(ex.tables && ex.tables.length)
+    rows += `<div class="ex-row"><b>数据来源</b>：${ex.tables.map(t=>`<code>${esc(t)}</code>`).join(" ")}</div>`;
+  return `<details class="explain">
+    <summary>查看 SQL 与口径依据（${kindLabel}）</summary>
+    <div class="ex-b">
+      ${rows}
+      <div class="ex-note">${esc(ex.note||"")}</div>
+      <pre class="sql" style="margin-top:12px;border-radius:8px">${highlightSQL(s.sql)}</pre>
+    </div>
+  </details>`;
+}
+
+/* ---------- 原文检索卡片 ---------- */
+function renderRAG(g){
+  if(!g) return "";
+  const hits = (g.hits||[]).map((h,i)=>`
+    <div class="hit">
+      <div class="hit-h">
+        <b>${esc(h.company)}</b><span class="sub">${esc(h.title)}</span>
+        <span class="score">${h.score}</span>
+      </div>
+      <div class="hit-h" style="margin:-4px 0 8px">
+        <span class="sub">${esc(h.city||"—")} · ${esc(h.date||"—")} · ${KIND[h.kind]||h.kind}</span>
+      </div>
+      <div class="hit-t collapsed" data-idx="${i}">${esc(h.text)}</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="toggle" data-toggle="${i}">展开全文</button>
+        ${h.url?`<a href="${esc(h.url)}" target="_blank" rel="noopener">原始 JD ↗</a>`:""}
+      </div>
+    </div>`).join("") || `<div class="empty">未检索到相关片段</div>`;
+
+  return `<div class="card">
+    <div class="card-h"><span class="dot" style="background:var(--brand)"></span>JD 原文检索
+      <span class="meta">${(g.hits||[]).length} 条来源</span></div>
+    <div class="card-b md">${g.ok ? md(g.answer) : `<div class="err">${esc(g.error||"")}</div>`}</div>
+    <div class="card-b" style="border-top:1px solid var(--line-soft);background:#fcfcfd">${hits}</div>
+  </div>`;
+}
+
+function suggBar(list){
+  if(!list || !list.length) return "";
+  return `<div class="sugg"><span class="sugg-l">接着问</span>${
+    list.map(q=>`<span class="chip sm" data-q="${esc(q)}">${esc(q)}</span>`).join("")}</div>`;
+}
+
+function bindToggles(){
+  document.querySelectorAll(".toggle").forEach(b => b.onclick = () => {
+    const el = document.querySelector(`.hit-t[data-idx="${b.dataset.toggle}"]`);
+    const c = el.classList.toggle("collapsed");
+    b.textContent = c ? "展开全文" : "收起";
+  });
+}
+
+/* 结果表在窄屏必然横向溢出（列多、单元格不换行）。加一条提示，
+   否则用户只会看到表格右边被齐刷刷截断，不知道还能滑。 */
+function bindScrollHints(){
+  document.querySelectorAll(".card-b.tight .scroll").forEach(el => {
+    const nx = el.nextElementSibling;
+    if(nx && nx.classList.contains("x-hint")) return;
+    if(el.scrollWidth > el.clientWidth + 4){
+      const d = document.createElement("div");
+      d.className = "x-hint";
+      d.textContent = "← 左右滑动查看完整表格 →";
+      el.after(d);
+    }
+  });
+}
+
+/* 图表几何取决于屏宽，旋屏/改窗宽后必须重排，否则文字会被压扁 */
+let lastChart = null, rzTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(rzTimer);
+  rzTimer = setTimeout(() => {
+    const box = document.getElementById("chartBody");
+    if(box && lastChart) box.innerHTML = chartBody(lastChart);
+  }, 150);
+});
+
+/* ---------- 反馈 / 导出 ---------- */
+let lastPayload = null;
+
+function csvBlob(cols, rows){
+  const cell = v => {
+    const s = v === null || v === undefined ? "" : String(v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const lines = [cols.map(cell).join(",")].concat(rows.map(r => r.map(cell).join(",")));
+  // BOM：不加的话 Excel 打开中文是乱码
+  return new Blob(["\ufeff" + lines.join("\n")], {type: "text/csv;charset=utf-8"});
+}
+
+function bindCardActions(){
+  document.querySelectorAll("[data-fb-row]").forEach(row => {
+    const msg = row.querySelector(".fb-msg");
+    const s = lastPayload && lastPayload.sql;
+    row.querySelectorAll("[data-fb]").forEach(btn => btn.onclick = async () => {
+      if(!s) return;
+      const verdict = btn.dataset.fb;
+      btn.disabled = true;
+      msg.style.color = "var(--muted)";
+      msg.textContent = "提交中…";
+      try{
+        const r = await fetch("/api/feedback", {
+          method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({
+            question: (lastPayload.resolved || lastPayload.question),
+            sql: s.sql, source: s.source, metric: s.metric, mode: lastPayload.mode,
+            answer: s.answer, sid, verdict
+          })
+        }).then(x=>x.json());
+        msg.style.color = r.ok ? "var(--ok)" : "var(--err)";
+        msg.textContent = r.note || (r.ok ? "已记录" : (r.error || "提交失败"));
+        if(verdict === "correct" && r.learned){
+          row.querySelectorAll("[data-fb]").forEach(b => b.disabled = true);
+        }else{
+          btn.disabled = false;
+        }
+      }catch(e){
+        msg.style.color = "var(--err)";
+        msg.textContent = "提交失败：" + e.message;
+        btn.disabled = false;
+      }
+    });
+    const csv = row.querySelector("[data-csv]");
+    if(csv) csv.onclick = () => {
+      if(!s || !s.rows || !s.rows.length) return;
+      const url = URL.createObjectURL(csvBlob(s.cols, s.rows));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "jd-query-" + new Date().toISOString().slice(0,19).replace(/[:T]/g,"") + ".csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+  });
+  document.querySelectorAll(".sugg .chip").forEach(c => c.onclick = () => {
+    $("#q").value = c.dataset.q;
+    $("#form").requestSubmit();
+  });
+}
+
+/* ---------- 历史 ---------- */
+const HKEY = "jd_insight_history";
+const history = () => { try{ return JSON.parse(localStorage.getItem(HKEY)) || []; }catch(e){ return []; } };
+function pushHistory(q, m){
+  const h = history().filter(x => x.q !== q);
+  h.unshift({q, m, at: Date.now()});
+  localStorage.setItem(HKEY, JSON.stringify(h.slice(0, 40)));
+  renderHistory();
+}
+function renderHistory(){
+  const h = history();
+  $("#histBody").innerHTML = h.length ? h.map(x => {
+    const d = new Date(x.at);
+    const t = `${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+    return `<div class="hitem" data-q="${esc(x.q)}"><span>${esc(x.q)}</span><span class="t">${t}</span></div>`;
+  }).join("") : `<div class="empty" style="padding:12px">还没有查询记录</div>`;
+  document.querySelectorAll(".hitem").forEach(el => el.onclick = () => {
+    closeDrawer();
+    $("#q").value = el.dataset.q;
+    $("#form").requestSubmit();
+  });
+  $("#histFoot").textContent = h.length
+    ? `共 ${h.length} 条 · 只存在这台浏览器本地，不上传`
+    : "历史只存在这台浏览器本地，不上传。";
+}
+const openDrawer = () => { $("#drawer").classList.add("on"); $("#mask").classList.add("on"); };
+const closeDrawer = () => { $("#drawer").classList.remove("on"); $("#mask").classList.remove("on"); };
+
+/* ---------- 启动 ---------- */
+async function boot(){
+  let st = FALLBACK, ex = FALLBACK_EX;
+  try{
+    const [a, b] = await Promise.all([
+      fetch("/api/stats").then(r=>r.json()),
+      fetch("/api/examples").then(r=>r.json())
+    ]);
+    if(a && !a.error) st = a;
+    if(Array.isArray(b) && b.length) ex = b;
+  }catch(e){
+    st = FALLBACK; ex = FALLBACK_EX;
+  }
+
+  const nMonths = Array.isArray(st.months) ? st.months.length : st.months;
+  $("#badges").innerHTML = [
+    `样本 <b>${st.jobs}</b> 条`, `公司 <b>${st.companies}</b> 家`,
+    `技能标签 <b>${st.skills}</b> 个`, `月份 <b>${nMonths}</b> 个`,
+    `命名指标 <b>${st.metrics || "—"}</b> 个`,
+    `模型 <b>${esc(st.llm_model || "—")}</b>`
+  ].map(x=>`<span class="badge">${x}</span>`).join("");
+
+  if(st.offline){
+    $("#banner").style.display = "block";
+    $("#banner").innerHTML = "未连接后端服务，当前为静态预览。<br>在项目目录执行 <code>./run.sh</code>，然后访问 <code>http://127.0.0.1:8770/</code> 即可提问。";
+  }else if(!st.llm_ready){
+    $("#banner").style.display = "block";
+    $("#banner").innerHTML = "尚未配置 API key —— 需要模型的问题暂时无法回答。<br>"
+      + "但<b>指标层覆盖的问题（如「各公司岗位数排行」）无需 key 即可提问</b>，可以先用它看数据。<br>"
+      + "要开启完整问答，把 key 填进 <code>config.json</code> 的 <code>api_key</code> 后重启服务。";
+  }
+
+  /* 窄屏两处收敛：占位文案会折成三行、示例 chips 会铺满一整屏 */
+  if(isNarrow()){
+    $("#q").placeholder = "问点什么，比如：真 AI PM 占比是多少？";
+    ex = ex.slice(0, 5);
+  }
+  $("#examples").innerHTML = ex.map(q=>`<span class="chip">${esc(q)}</span>`).join("");
+  document.querySelectorAll("#examples .chip").forEach(c => c.onclick = () => {
+    $("#q").value = c.textContent; $("#form").requestSubmit();
+  });
+  renderHistory();
+}
+
+$("#histBtn").onclick = openDrawer;
+$("#histClose").onclick = closeDrawer;
+$("#mask").onclick = closeDrawer;
+$("#newChat").onclick = async () => {
+  try{ sid = (await fetch("/api/session", {method:"POST"}).then(r=>r.json())).sid; }catch(e){ sid = null; }
+  $("#out").innerHTML = "";
+  $("#q").value = "";
+  $("#q").focus();
+};
+
+/* ---------- 提问 ---------- */
+$("#form").onsubmit = async e => {
+  e.preventDefault();
+  const q = $("#q").value.trim();
+  if(!q) return;
+  const btn = $("#go");
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> 分析中';
+  $("#out").innerHTML = "";
+  try{
+    const r = await fetch("/api/ask", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({question:q, mode, sid})
+    }).then(x=>x.json());
+
+    if(r.sid) sid = r.sid;
+
+    if(r.error && r.need_key){
+      $("#out").innerHTML = `<div class="card"><div class="card-b">
+        <div class="err">${esc(r.error)}</div>
+        <p style="margin:12px 0 0;color:var(--muted);font-size:13.5px">
+          这个问题会被路由到「<b>${esc(r.route_label||r.route)}</b>」。
+          ${esc(r.hint||"")}</p></div></div>`;
+      return;
+    }
+    if(r.error){ $("#out").innerHTML = `<div class="card"><div class="card-b"><div class="err">${esc(r.error)}</div></div></div>`; return; }
+
+    lastPayload = r;
+    lastChart = r.chart || null;
+    pushHistory(q, mode);
+
+    const inherit = (r.rewrite && r.rewrite.changed)
+      ? `<p class="inherit">${esc(r.rewrite.note)}<br>实际执行的问题：<b>${esc(r.resolved)}</b></p>` : "";
+    const cacheTag = r.cached ? `<span class="pill info">缓存命中</span>` : "";
+
+    $("#out").innerHTML =
+      `<div style="margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+         <span class="route">▸ ${esc(r.route_label)}</span>${cacheTag}</div>`
+      + inherit
+      + renderSQL(r.sql)
+      + chartCard(r.chart)
+      + insightsCard(r.insights)
+      + renderRAG(r.rag)
+      + suggBar(r.suggestions);
+    bindToggles();
+    bindCardActions();
+    bindScrollHints();
+  }catch(err){
+    $("#out").innerHTML = `<div class="card"><div class="card-b"><div class="err">请求失败：${esc(err.message)}</div></div></div>`;
+  }finally{
+    btn.disabled = false; btn.textContent = "提问";
+  }
+};
+
+$("#q").addEventListener("input", function(){
+  this.style.height = "auto";
+  this.style.height = Math.min(this.scrollHeight, 180) + "px";
+});
+$("#q").addEventListener("keydown", e => {
+  if((e.metaKey||e.ctrlKey) && e.key === "Enter") $("#form").requestSubmit();
+});
+/* 深链：/#q=各公司岗位数排行 打开即出结果 —— 方便把一次查询直接分享给别人 */
+function deepLink(){
+  const m = (location.hash || "").match(/^#q=(.+)$/);
+  if(!m) return;
+  let q = m[1];
+  try{ q = decodeURIComponent(q); }catch(e){}
+  if(!q.trim()) return;
+  $("#q").value = q;
+  $("#form").requestSubmit();
+}
+
+/* ==================== 求职助手 ====================
+   五维数字全部由后端从 job / job_skill 两张表算出来（kb/profile.py），
+   这里只负责画。雷达图同样是纯 SVG，窄屏换几何 —— 与查询视图一套规矩。 */
+let C_DIRS = null, C_SKILLS = null, C_CITIES = null, C_RESUME_MD = "";
+const TAGS = {gap: "缺口", near: "接近", strength: "强项", todo: "补课", target: "投递"};
+const VIEWS = {ask: "viewAsk", career: "viewCareer"};
+
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("on", x === b));
+  Object.entries(VIEWS).forEach(([k, id]) =>
+    $("#" + id).classList.toggle("on", k === b.dataset.view));
+  if(b.dataset.view === "career" && !C_DIRS) careerBoot();
+});
+
+async function careerBoot(){
+  try{
+    const [d, s] = await Promise.all([
+      fetch("/api/directions").then(r => r.json()),
+      fetch("/api/skills").then(r => r.json())
+    ]);
+    if(d.error) throw new Error(d.error);
+    C_DIRS = d;
+    C_SKILLS = Array.isArray(s) ? s : [];
+  }catch(e){
+    $("#cTip").innerHTML = "读不到后端数据：" + esc(e.message)
+      + "　—— 求职助手需要后端在跑（<code>./run.sh</code> 后访问 127.0.0.1:8770）。";
+    return;
+  }
+  renderDirs();
+  renderSkillPicker();
+  syncSkillTags();
+  $("#cCity").onchange = cityHint;
+  await refreshCities();       // 城市清单要跟着默认方向走，所以放在 renderDirs 之后
+  $("#cTip").textContent = "画像为纯统计计算，不调用模型；生成简历才会用模型（没配 key 会自动降级）";
+}
+
+function renderDirs(){
+  const cats = {};
+  (C_DIRS.directions || []).forEach(x => (cats[x.cat] = cats[x.cat] || []).push(x));
+  $("#cDir").innerHTML = Object.keys(cats).map(c =>
+    `<optgroup label="${esc(c)}">` + cats[c].map(x =>
+      `<option value="${esc(x.key)}" data-scope="${esc(x.scope)}" data-small="${x.small_sample ? 1 : 0}">${esc(x.name)}（${x.n} 个岗位）</option>`
+    ).join("") + `</optgroup>`).join("");
+  /* 换方向要连带把城市下拉重排：该方向招人的城市置顶，
+     否则用户会拿着一个与方向无关的全国城市表瞎选。 */
+  $("#cDir").onchange = () => { dirHint(); refreshCities(); };
+  dirHint();
+}
+
+function dirHint(){
+  const o = $("#cDir").selectedOptions[0];
+  if(!o) return;
+  $("#cDirHint").textContent = o.dataset.scope
+    + (o.dataset.small === "1" ? "　⚠ 样本偏小（<30 条），结论参考价值有限" : "");
+}
+
+/* ---------- 期望城市：下拉，选项来自 /api/cities ---------- */
+async function refreshCities(){
+  const dir = $("#cDir").value;
+  const sel = $("#cCity");
+  sel.disabled = true;
+  try{
+    const r = await fetch("/api/cities?direction=" + encodeURIComponent(dir))
+      .then(x => x.json());
+    if(r.error) throw new Error(r.error);
+    C_CITIES = r;
+  }catch(e){
+    sel.disabled = false;
+    $("#cCityHint").textContent = "读不到城市清单：" + e.message;
+    return;
+  }
+  sel.disabled = false;
+  renderCities();
+}
+
+function cityOption(c, withDir){
+  const n = withDir ? (c.n_dir || 0) : c.n;
+  const label = withDir
+    ? `${c.name}（该方向 ${c.n_dir} 个 · 全库 ${c.n} 个）`
+    : `${c.name}（${c.n} 个岗位）`;
+  return `<option value="${esc(c.name)}" data-n="${n}" data-nd="${c.n_dir || 0}">${esc(label)}</option>`;
+}
+
+function renderCities(){
+  const sel = $("#cCity");
+  const keep = sel.value;
+  const list = (C_CITIES && C_CITIES.cities) || [];
+  const withDir = !!(C_CITIES && C_CITIES.direction);
+  let html = `<option value="">不限 / 暂不确定</option>`;
+
+  if(withDir){
+    const hot = list.filter(c => (c.n_dir || 0) > 0);
+    const cold = list.filter(c => !(c.n_dir || 0));
+    if(hot.length)
+      html += `<optgroup label="本方向招人（${esc(C_CITIES.scope_total)} 条岗位）">`
+        + hot.map(c => cityOption(c, true)).join("") + `</optgroup>`;
+    if(cold.length)
+      html += `<optgroup label="该方向样本里暂无岗位">`
+        + cold.map(c => cityOption(c, true)).join("") + `</optgroup>`;
+  }else{
+    html += `<optgroup label="全部工作地（${esc(C_CITIES ? C_CITIES.total : "")} 条岗位）">`
+      + list.map(c => cityOption(c, false)).join("") + `</optgroup>`;
+  }
+  sel.innerHTML = html;
+  /* 换了方向后原来选的城市可能不在新清单里（或在新清单里但该方向没岗位）：
+     前者回落到「不限」，后者保留 —— 用户就是想去那个城市，别替他改。 */
+  sel.value = [...sel.options].some(o => o.value === keep) ? keep : "";
+
+  if(!C_CITIES) return;
+  if(sel.value) return cityHint();     // 有选中城市时展示这座城市的口径
+  const top = list.find(c => (c.n_dir || 0) > 0) || list[0];
+  $("#cCityHint").textContent = (withDir && top)
+    ? `知识库口径：该方向 ${C_CITIES.scope_total} 条岗位分布在 `
+      + `${list.filter(c => c.n_dir > 0).length} 个城市，${top.name} 最多（${top.n_dir} 条）`
+    : `知识库共 ${C_CITIES.total} 条岗位，覆盖 ${list.length} 个工作地`;
+}
+
+function cityHint(){
+  const o = $("#cCity").selectedOptions[0];
+  if(!o || !o.value) return;
+  const nd = +o.dataset.nd, n = +o.dataset.n;
+  $("#cCityHint").textContent = nd > 0
+    ? `「${o.value}」在该方向有 ${nd} 条岗位，全库 ${n} 条`
+    : `「${o.value}」全库 ${n} 条岗位，但该方向样本里没有 —— 可能要看远程或换城市`;
+}
+
+/* ---------- 技能：联想输入 + 可删除标签 ---------- */
+function skillMatches(q){
+  q = (q || "").trim().toLowerCase();
+  if(!q) return [];
+  const hit = [];
+  for(const x of C_SKILLS){
+    const nm = x.skill.toLowerCase();
+    const keys = (x.keys || []).map(k => k.toLowerCase());
+    /* 排前面的更可能是用户想要的：规范名前缀 > 规范名包含 >
+       别名前缀 > 别名包含 > 维度名（写「数据」能捞出所有数据类技能） */
+    let rank = -1;
+    if(nm.startsWith(q)) rank = 0;
+    else if(nm.includes(q)) rank = 1;
+    else if(keys.some(k => k.startsWith(q))) rank = 2;
+    else if(keys.some(k => k.includes(q))) rank = 3;
+    else if(x.dim_name.toLowerCase().includes(q)) rank = 4;
+    if(rank >= 0) hit.push({x, rank});
+  }
+  return hit.sort((a, b) => a.rank - b.rank || b.x.pct - a.x.pct).slice(0, 9);
+}
+
+let C_SUG = [], C_SUG_I = -1;
+
+function renderSkillPicker(){
+  const groups = {};
+  C_SKILLS.forEach(x => (groups[x.dim_name] = groups[x.dim_name] || []).push(x));
+  $("#cSkills").innerHTML = Object.keys(groups).map(g =>
+    `<div class="skgrp"><div class="skgrp-h">${esc(g)}<span class="n">${groups[g].length} 项</span></div>`
+    + groups[g].map(x =>
+        `<span class="sk" data-skill="${esc(x.skill)}" title="全库 ${x.n} 条岗位提到">${esc(x.skill)}<i>${(x.pct * 100).toFixed(0)}%</i></span>`
+      ).join("") + `</div>`).join("");
+  document.querySelectorAll("#cSkills .sk").forEach(el =>
+    el.onclick = () => { el.classList.toggle("on"); syncSkillTags(); });
+  bindSkillInput();
+}
+
+/** 标签行是「已选技能」的视图；点选网格或联想添加都只改网格的 .on，再统一重画。 */
+function syncSkillTags(){
+  const on = [...document.querySelectorAll("#cSkills .sk.on")];
+  const box = $("#cSkillTags");
+  if(!on.length){
+    box.innerHTML = `<span class="tags-empty">还没添加技能 —— 上方输入关键词联想，或直接在下面点选</span>`;
+    return;
+  }
+  box.innerHTML = on.map(el =>
+    `<span class="tag" data-skill="${esc(el.dataset.skill)}">${esc(el.dataset.skill)}<b title="移除">×</b></span>`
+  ).join("") + `<span class="tag-clear" id="cSkillClear">清空（已选 ${on.length} 项）</span>`;
+  box.querySelectorAll(".tag b").forEach(b => b.onclick = () => {
+    const name = b.parentElement.dataset.skill;
+    const el = [...document.querySelectorAll("#cSkills .sk")]
+      .find(x => x.dataset.skill === name);
+    if(el) el.classList.remove("on");
+    syncSkillTags();
+  });
+  $("#cSkillClear").onclick = () => {
+    document.querySelectorAll("#cSkills .sk.on").forEach(x => x.classList.remove("on"));
+    syncSkillTags();
+  };
+}
+
+function toggleSkill(name){
+  const el = [...document.querySelectorAll("#cSkills .sk")]
+    .find(x => x.dataset.skill === name);
+  if(!el) return;
+  el.classList.add("on");
+  el.scrollIntoView({block: "nearest"});
+  syncSkillTags();
+}
+
+function closeSug(){
+  C_SUG = []; C_SUG_I = -1;
+  const p = $("#cSkillSug");
+  p.hidden = true; p.innerHTML = "";
+}
+
+function openSug(items, q){
+  const p = $("#cSkillSug");
+  C_SUG = items; C_SUG_I = items.length ? 0 : -1;
+  if(!items.length){
+    p.innerHTML = `<div class="ac-none">知识库里没有匹配「${esc(q)}」的技能。<br>`
+      + `换个词试试（如「知识库」「埋点」「跨部门」），或把它写进下面的经历 —— 那段文字同样会走知识库识别。</div>`;
+    p.hidden = false;
+    return;
+  }
+  p.innerHTML = items.map((it, i) => {
+    const x = it.x;
+    return `<div class="ac-item${i === 0 ? " act" : ""}" data-i="${i}" data-skill="${esc(x.skill)}">`
+      + `<span class="nm">${esc(x.skill)}</span>`
+      + `<span class="dm">${esc(x.dim_name)}${it.rank >= 2 ? " · 别名命中" : ""}</span>`
+      + `<span class="pc">全库 ${(x.pct * 100).toFixed(0)}%</span></div>`;
+  }).join("");
+  p.hidden = false;
+  p.querySelectorAll(".ac-item").forEach(el => {
+    /* 用 mousedown 而不是 click：input 的 blur 会抢在 click 前关面板 */
+    el.onmousedown = ev => { ev.preventDefault(); pickSug(+el.dataset.i); };
+  });
+  markSug();
+}
+
+/** 把「已选」和当前高亮项刷到联想面板上（候选本身不带状态，都去网格上查）。 */
+function markSug(){
+  const p = $("#cSkillSug");
+  const on = new Set([...document.querySelectorAll("#cSkills .sk.on")]
+    .map(el => el.dataset.skill));
+  p.querySelectorAll(".ac-item").forEach((el, i) => {
+    el.classList.toggle("act", i === C_SUG_I);
+    el.classList.toggle("added", on.has(el.dataset.skill));
+  });
+}
+
+function pickSug(i){
+  const it = C_SUG[i];
+  if(!it) return;
+  toggleSkill(it.x.skill);
+  const inp = $("#cSkillInput");
+  inp.value = "";
+  closeSug();
+  inp.focus();
+}
+
+function bindSkillInput(){
+  const inp = $("#cSkillInput");
+  if(!inp || inp.dataset.bound) return;
+  inp.dataset.bound = "1";
+
+  inp.oninput = () => {
+    const q = inp.value;
+    if(!q.trim()) return closeSug();
+    openSug(skillMatches(q), q.trim());
+  };
+  inp.onfocus = () => { if(inp.value.trim()) openSug(skillMatches(inp.value), inp.value.trim()); };
+  inp.onblur = () => setTimeout(closeSug, 120);
+  /* 空输入时按退格删掉最后一个标签 —— 标签输入框的通用手感 */
+  inp.onkeydown = ev => {
+    if(ev.key === "Backspace" && !inp.value){
+      const on = [...document.querySelectorAll("#cSkills .sk.on")];
+      if(on.length){
+        ev.preventDefault();
+        on[on.length - 1].classList.remove("on");
+        syncSkillTags();
+      }
+      return;
+    }
+    if(!$("#cSkillSug").hidden && C_SUG.length){
+      if(ev.key === "ArrowDown" || ev.key === "ArrowUp"){
+        ev.preventDefault();
+        C_SUG_I = (C_SUG_I + (ev.key === "ArrowDown" ? 1 : C_SUG.length - 1)) % C_SUG.length;
+        markSug();
+        return;
+      }
+      if(ev.key === "Enter"){
+        ev.preventDefault();
+        pickSug(C_SUG_I >= 0 ? C_SUG_I : 0);
+        return;
+      }
+    }
+    if(ev.key === "Enter" && inp.value.trim()){
+      /* 候选没开着（比如直接粘贴后回车）就按最佳匹配兜底 */
+      const m = skillMatches(inp.value);
+      if(m.length) pickSug(0);
+      else { ev.preventDefault(); openSug([], inp.value.trim()); }
+      return;
+    }
+    if(ev.key === "Escape") closeSug();
+  };
+}
+
+function careerPayload(){
+  return {
+    direction: $("#cDir").value,
+    years: $("#cYears").value,
+    city: $("#cCity").value.trim(),
+    current_title: $("#cTitle").value.trim(),
+    experience: $("#cExp").value.trim(),
+    skills: [...document.querySelectorAll("#cSkills .sk.on")].map(el => el.dataset.skill)
+  };
+}
+
+/* ---------- 雷达图 ---------- */
+const SHORT_DIM = {"AI 技术理解": "AI 技术", "协作与影响力": "协作影响",
+                   "行业与业务": "行业业务"};
+
+function radarSVG(dims){
+  const narrow = isNarrow();
+  const W = narrow ? 340 : 680, H = narrow ? 306 : 436;
+  const cx = W / 2, cy = narrow ? 154 : 210, r = narrow ? 94 : 148;
+  const n = dims.length;
+  const pt = (i, v) => {
+    const a = -Math.PI / 2 + i * 2 * Math.PI / n;
+    return [cx + r * v * Math.cos(a), cy + r * v * Math.sin(a)];
+  };
+  let g = "";
+  [0.25, 0.5, 0.75, 1].forEach(v => {
+    const p = dims.map((_, i) => pt(i, v).map(x => x.toFixed(1)).join(",")).join(" ");
+    g += `<polygon points="${p}" fill="none" stroke="#e8eaee" stroke-width="1"></polygon>`;
+  });
+  dims.forEach((_, i) => {
+    const [x, y] = pt(i, 1);
+    g += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#eef0f3"></line>`;
+  });
+  const poly = key => dims.map((d, i) =>
+    pt(i, Math.max(0, Math.min(100, d[key])) / 100).map(x => x.toFixed(1)).join(",")).join(" ");
+  /* 目标用虚线 + 浅填充，自身用实线 + 实填充：叠在一起时谁是谁一眼能分 */
+  g += `<polygon points="${poly("target")}" fill="rgba(79,70,229,.10)" stroke="#4f46e5" stroke-width="2" stroke-dasharray="5 3"></polygon>`;
+  g += `<polygon points="${poly("self")}" fill="rgba(13,148,136,.18)" stroke="#0d9488" stroke-width="2.2" stroke-linejoin="round"></polygon>`;
+  dims.forEach((d, i) => {
+    const [x, y] = pt(i, Math.max(0, Math.min(100, d.self)) / 100);
+    g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4" fill="#fff" stroke="#0d9488" stroke-width="2"></circle>`;
+  });
+  dims.forEach((d, i) => {
+    const [x, y] = pt(i, 1.15);
+    const a = -Math.PI / 2 + i * 2 * Math.PI / n, cos = Math.cos(a), sin = Math.sin(a);
+    const anchor = Math.abs(cos) < 0.3 ? "middle" : (cos > 0 ? "start" : "end");
+    const dy = sin > 0.5 ? 11 : (sin < -0.5 ? 0 : 4);
+    const nm = narrow ? (SHORT_DIM[d.name] || d.name.replace(/\s/g, "").slice(0, 5)) : d.name;
+    g += `<text x="${x.toFixed(1)}" y="${(y + dy).toFixed(1)}" text-anchor="${anchor}"`
+      +  ` font-size="${narrow ? 11 : 12.5}" fill="#404652">${esc(nm)}</text>`
+      +  `<text x="${x.toFixed(1)}" y="${(y + dy + (narrow ? 12 : 15)).toFixed(1)}" text-anchor="${anchor}"`
+      +  ` font-size="${narrow ? 10 : 11}" fill="#9ca3af">${d.self} / ${d.target}</text>`;
+  });
+  return svgBox(W, H, g);
+}
+
+function radarCard(an){
+  return `<div class="card">
+    <div class="card-h"><span class="dot" style="background:var(--brand)"></span>五维能力对比
+      <span class="pill">${esc(an.direction.name)}</span>
+      <span class="meta">整体达成度 ${an.overall}%　·　${esc(an.direction.scope)}</span></div>
+    <div class="legend">
+      <span><i style="background:rgba(79,70,229,.12);border:2px dashed #4f46e5"></i>目标岗位要求</span>
+      <span><i style="background:rgba(13,148,136,.20);border:2px solid #0d9488"></i>我的能力</span>
+      <span style="color:var(--faint)">轴上数字为「我的分 / 目标分」</span>
+    </div>
+    <div class="chart">${radarSVG(an.dims)}</div>
+  </div>`;
+}
+
+function dimCard(an){
+  return `<div class="card">
+    <div class="card-h"><span class="dot" style="background:#d97706"></span>逐维对照
+      <span class="meta">得分 = 该维人均要求项数 ÷ 本方向最深维 × 100</span></div>
+    <div class="card-b"><div class="dimlist">${an.dims.map(d => `
+      <div class="dim">
+        <div class="dim-h"><b>${esc(d.name)}</b>
+          <span class="lvl ${d.level}">${esc(d.level_label)}</span>
+          <span class="num">人均要求 ${d.need} 项 / 你 ${d.have} 项</span></div>
+        <div class="gbar"><i style="width:${Math.max(0, Math.min(100, d.self))}%"></i>
+          <u style="left:${Math.max(0, Math.min(100, d.target))}%"></u></div>
+        ${d.mine.length ? `<div class="mine">已具备：${d.mine.map(esc).join("、")}</div>` : ""}
+        ${d.missing.length ? `<div class="miss">缺口：${d.missing.map(m =>
+          `${esc(m.skill)}（该方向 ${(m.pct * 100).toFixed(0)}% 提及）`).join("、")}</div>` : ""}
+      </div>`).join("")}</div></div>
+  </div>`;
+}
+
+function thrCard(an){
+  const t = an.threshold || {}, rows = [];
+  if(t.years && t.years.verdict)
+    rows.push(`<div class="${t.years.ok ? "ok" : "no"}">${t.years.ok ? "✓" : "⚠"} ${esc(t.years.verdict)}</div>`);
+  if(t.city)
+    rows.push(`<div class="${t.city.ok ? "ok" : "no"}">${t.city.ok ? "✓" : "⚠"} ${esc(t.city.verdict)}</div>`);
+  if(!rows.length) return "";
+  return `<div class="card">
+    <div class="card-h"><span class="dot" style="background:#9ca3af"></span>硬门槛校验
+      <span class="meta">年限与城市不是能力，不混进雷达图</span></div>
+    <div class="thr">${rows.join("")}</div></div>`;
+}
+
+function adviceCard(an){
+  return `<div class="card">
+    <div class="card-h"><span class="dot" style="background:var(--ok)"></span>求职建议
+      <span class="meta">由统计结果直接推出，未调用模型</span></div>
+    <div class="advice">${an.advice.map(a => `
+      <div class="adv"><span class="tag ${a.kind}">${TAGS[a.kind] || a.kind}</span>
+        <div class="adv-b"><b>${esc(a.title)}</b>${esc(a.detail)}</div></div>`).join("")}</div>
+  </div>`;
+}
+
+function basisCard(an){
+  return `<div class="card"><details class="explain">
+    <summary>这个分数是怎么算出来的</summary>
+    <div class="ex-b">
+      <div class="ex-note">${esc(an.basis)}</div>
+      <div class="ex-row" style="margin-top:10px"><b>数据来源</b>：
+        <code>job</code> 与 <code>job_skill</code> 两张表；技能分组复用
+        <code>analyze/skills.py</code> 的既有词典，不是另编的一套维度。</div>
+    </div></details></div>`;
+}
+
+function resumeCard(r){
+  const qc = r.quote_check || {};
+  const ev = r.evidence || [];
+  const tag = r.mode === "llm"
+    ? `<span class="pill info">模型生成</span>` : `<span class="pill">规则版 · 未调用模型</span>`;
+  /* 引文核对只在真的引了原文时才报，否则「0/0」会让人以为核对没跑 */
+  const verify = (r.mode === "llm" && qc.checked > 0)
+    ? `<span class="pill ${qc.unverified && qc.unverified.length ? "" : "ok"}">引文核对 ${qc.verified}/${qc.checked}</span>` : "";
+  const dg = qc.downgraded > 0
+    ? `<span class="pill">已摘除 ${qc.downgraded} 处非原文引号</span>` : "";
+  const evBlock = ev.length ? `<div class="card-b tight" style="border-top:1px solid var(--line-soft)">
+      <div style="padding:12px 18px 4px;font-size:12.5px;color:var(--muted)">
+        <b style="color:var(--text)">依据的岗位原文（${ev.length} 条）</b>
+        　上面「依据：[N]」的编号就是这里的序号；引号里的句子一律逐字可查。
+      </div>
+      <div class="card-b">${ev.map((e, i) => `
+        <div class="hit">
+          <div class="hit-h"><b>[${i + 1}] ${esc(e.company)}</b><span class="sub">${esc(e.title)}</span>
+            <span class="score">相关度 ${e.score}</span></div>
+          <div class="hit-t collapsed" data-idx="ev${i}">${esc(e.text)}</div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <button class="toggle" data-toggle="ev${i}">展开全文</button>
+            ${e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener">原始 JD ↗</a>` : ""}
+          </div>
+        </div>`).join("")}</div>
+    </div>` : "";
+  return `<div class="card">
+    <div class="card-h"><span class="dot" style="background:#7c3aed"></span>优化版简历${tag}${verify}${dg}
+      <span class="meta">${r.mode === "llm" ? "每条改写都挂了原文依据" : "照原文自己改"}</span></div>
+    ${r.reason ? `<div class="card-b" style="padding-bottom:0"><div class="err"
+        style="background:var(--warn-soft);border-color:#fde68a;color:var(--warn)">${esc(r.reason)}　已自动降级为规则版，功能不受影响。</div></div>` : ""}
+    <div class="card-b md" id="resumeMd">${md(r.markdown)}</div>
+    <div class="fb" id="resumeFb">
+      <button class="ghost" data-copy>复制全文</button>
+      <button class="ghost" data-dlm>下载 .md</button>
+      <span class="fb-msg"></span>
+    </div>
+    ${evBlock}
+  </div>`;
+}
+
+function bindResumeActions(mdText){
+  const box = $("#resumeFb");
+  if(!box) return;
+  const msg = box.querySelector(".fb-msg");
+  const copy = box.querySelector("[data-copy]");
+  const dl = box.querySelector("[data-dlm]");
+  if(copy) copy.onclick = async () => {
+    try{
+      await navigator.clipboard.writeText(mdText);
+      msg.style.color = "var(--ok)"; msg.textContent = "已复制到剪贴板";
+    }catch(e){
+      msg.style.color = "var(--err)";
+      msg.textContent = "浏览器不允许自动复制，请手动选中正文复制";
+    }
+  };
+  if(dl) dl.onclick = () => {
+    const url = URL.createObjectURL(new Blob([mdText], {type: "text/markdown;charset=utf-8"}));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "resume-" + new Date().toISOString().slice(0, 10) + ".md";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+}
+
+function errCard(msg){
+  return `<div class="card"><div class="card-b"><div class="err">${esc(msg)}</div></div></div>`;
+}
+
+/* ---------- 提交 ---------- */
+async function callProfile(){
+  const r = await fetch("/api/profile", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(careerPayload())
+  }).then(x => x.json());
+  if(r.error) throw new Error(r.error);
+  $("#careerOut").innerHTML = radarCard(r) + dimCard(r) + thrCard(r)
+    + adviceCard(r) + basisCard(r);
+  if(isNarrow()) $("#careerOut").scrollIntoView({behavior: "smooth", block: "start"});
+  return r;
+}
+
+$("#cGo").onclick = async () => {
+  const btn = $("#cGo"), rb = $("#cResumeBtn");
+  btn.disabled = rb.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> 分析中';
+  $("#careerOut").innerHTML = "";
+  try{
+    await callProfile();
+  }catch(e){
+    $("#careerOut").innerHTML = errCard("分析失败：" + e.message);
+  }finally{
+    btn.disabled = rb.disabled = false;
+    btn.textContent = "生成能力画像";
+  }
+};
+
+$("#cResumeBtn").onclick = async () => {
+  const p = careerPayload();
+  if(!p.experience && !p.skills.length){
+    $("#careerOut").innerHTML = errCard("请至少填一项：勾选你具备的技能，或在「工作 / 项目经历」里写点东西。");
+    return;
+  }
+  const btn = $("#cGo"), rb = $("#cResumeBtn");
+  btn.disabled = rb.disabled = true;
+  rb.innerHTML = '<span class="spin" style="border-color:rgba(79,70,229,.3);border-top-color:#4f46e5"></span> 生成中';
+  $("#cTip").textContent = "模型正在改写并逐条核对引文，通常需要 1–2 分钟…";
+  $("#careerOut").innerHTML = "";
+  try{
+    const r = await fetch("/api/resume", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(p)
+    }).then(x => x.json());
+    if(r.error) throw new Error(r.error);
+    C_RESUME_MD = r.markdown || "";
+    const an = r.profile;
+    $("#careerOut").innerHTML = resumeCard(r)
+      + (an ? radarCard(an) + dimCard(an) + thrCard(an) + adviceCard(an) + basisCard(an) : "");
+    bindToggles();
+    bindResumeActions(C_RESUME_MD);
+    if(isNarrow()) $("#careerOut").scrollIntoView({behavior: "smooth", block: "start"});
+  }catch(e){
+    $("#careerOut").innerHTML = errCard("生成失败：" + e.message);
+  }finally{
+    btn.disabled = rb.disabled = false;
+    rb.textContent = "生成优化版简历";
+    $("#cTip").textContent = "画像为纯统计计算，不调用模型";
+  }
+};
+
+/* ==================== 「去学习」浮窗 ====================
+   把站外的移动端刷题应用（AI 产品经理刷题）用一个手机形状的浮窗浮在本站上。
+
+   几个刻意的取舍：
+   · **不做遮罩、不锁滚动**：这是浮窗不是模态框。加了遮罩就只能靠点遮罩关窗，
+     而且必须顺手把页面滚动锁掉（否则背景会在遮罩下偷偷滑动）—— 那套交互
+     属于「必须处理完才能走」的对话框，跟一个想边看边拖的刷题窗口不是一回事。
+   · **可以拖到任意位置**，但保证标题栏始终留一块在屏内（见 learnClamp）。
+   · **懒加载**：iframe 的真地址挂在 data-src 上，第一次开窗才赋值。否则每次
+     打开本站都会顺带把对方整站拉一遍 —— 那是别人的带宽，也拖慢首屏。
+   · **档位改的是 iframe 的真实视口，不是浮窗宽度**。对方页面按 viewport 宽度
+     响应式，iframe 文档宽度不是 390 就会切断点。宿主装不下时等比缩放（见 CSS）。
+   · **跨域 iframe 的加载失败检测不到**：没有 onerror，被 X-Frame-Options 拒掉时
+     onload 照样可能触发（拿到的是一个错误页）。所以不做「失败弹窗」这种假装
+     能判断的事，只做软兜底：等太久就给一句提示，并把「新标签打开」一直摆在
+     标题栏上。
+   · **进度存不存得住，要看浏览器**。那套程序把进度放在自己的 localStorage 里，
+     而 iframe 里属于「第三方存储」：Safari 默认直接拦（连写都不给写），
+     Chrome/Firefox 只是按站点分区。所以提示语不能说「进度会自动保存」——
+     那是替对方站点许一个我们保证不了的承诺。 */
+const LEARN_URL = "https://cain0624.github.io/ai-pm-app/";
+/* 只放能真正改变响应式断点的两档。再加「大屏」之类意义不大：
+   手机/平板已经跨过了绝大多数移动端断点，中间档只是同一个断点的等比缩放。 */
+const LEARN_VIEWS = {phone: [390, 844], pad: [768, 1024]};
+const LEARN_EDGE = 8;      // 浮窗离视口边缘的最小间隙
+const LEARN_PAD_W = 46;    // 横向被窗口吃掉的部分：边框 2 + 内容内边距 28 + 手机边框 16
+const LEARN_SLOW = 8000;   // 超过这么久还没 load，就提示「可能被拦了」
+/* 拖拽时至少要留在屏内的标题栏宽度。有它才敢放开边界 —— 见 learnClamp。 */
+const LEARN_KEEP = 96;
+
+let learnSize = "phone", learnOn = false, learnLoaded = false, learnTimer = 0;
+
+const learnOpen = () => learnOn;
+
+/* 把位移夹在「还能把窗口拖回来」的范围内。
+ *
+ * 老版本是把**整只窗口**锁在视口内（可动范围 = (视口 - 窗口)/2），窗口一大
+ * 这个范围就趋近于 0，手感就是「拖不动」—— 而手机档窗口本来就有 400+ 宽、
+ * 840+ 高，在小屏上基本纹丝不动。
+ *
+ * 现在允许拖到任意位置，只保证「抓手还在」：水平方向至少 LEARN_KEEP 宽
+ * 的标题栏留在屏内，垂直方向整个标题栏都在屏内。这样既能随便拖，又不可能
+ * 把窗口拖丢 —— 拖丢的窗口，用户没有任何办法找回来。 */
+function learnClamp(){
+  const win = $("#learnWin"), bar = $("#learnBar");
+  const w = win.offsetWidth, h = win.offsetHeight;
+  const barH = bar.offsetHeight || 40;
+  // 未平移时窗口左上角在视口里的位置（CSS 里是 left/top:50% + translate(-50%,-50%)）
+  const x0 = (innerWidth - w) / 2, y0 = (innerHeight - h) / 2;
+  const cur = n => parseFloat(win.style.getPropertyValue(n)) || 0;
+  const lo = (a, b) => Math.min(a, b), hi = (a, b) => Math.max(a, b);
+
+  const lxA = LEARN_KEEP - w - x0;            // 往左推到头：窗口右缘还剩 LEARN_KEEP
+  const lxB = innerWidth - LEARN_KEEP - x0;   // 往右推到头：窗口左缘还剩 LEARN_KEEP
+  const lyA = -y0;                            // 标题栏贴上缘
+  const lyB = innerHeight - barH - y0;        // 标题栏贴下缘
+  win.style.setProperty("--lx", Math.min(hi(lxA, lxB), Math.max(lo(lxA, lxB), cur("--lx"))) + "px");
+  win.style.setProperty("--ly", Math.min(hi(lyA, lyB), Math.max(lo(lyA, lyB), cur("--ly"))) + "px");
+}
+
+function learnLayout(){
+  if(!learnOn) return;
+  const [vw, vh] = LEARN_VIEWS[learnSize];
+  const win = $("#learnWin"), screen = $("#learnScreen"), fr = $("#learnFrame");
+  // 竖向被吃掉的部分（标题栏/提示栏/内外边距/边框）。它与屏幕尺寸无关，
+  // 所以每次量一次就够，不会和下面的赋值互相追着改。
+  const chrome = win.offsetHeight - screen.offsetHeight;
+  // 下限 0.25 只是防退化值：刻意不设「保证可读」的高下限 —— 宁可小到看得全，
+  // 也不要大到被窗口裁掉一角（裁掉的部分没有任何办法再看回来）。
+  const s = Math.max(0.25, Math.min(1,
+      (innerWidth  - LEARN_EDGE * 2 - LEARN_PAD_W) / vw,
+      (innerHeight - LEARN_EDGE * 2 - chrome) / vh));
+  screen.style.width  = (vw * s) + "px";
+  screen.style.height = (vh * s) + "px";
+  fr.style.width  = vw + "px";
+  fr.style.height = vh + "px";
+  fr.style.transform = "scale(" + s + ")";
+
+  /* 窗口宽度跟着**屏幕**走（约束 ④），但不能比「标题栏够用」还窄。
+     留给浏览器自动算的话，宽度由最大内容宽最大的子元素决定 —— 实测是底部
+     提示条（389.9px），于是屏幕在手机框里左对齐、右边露出一大块暗边。
+     反过来一味贴着屏幕（屏幕 × 缩放 + 边框内边距）也不行：屏幕被高度限制
+     缩到 250px 时，标题只剩 44px，显示成「AI 产…」，等于没有标题。
+     所以取两者的**较大值**：屏幕大时窗口跟着屏幕，屏幕小时窗口就是标题栏
+     的舒适宽度，多出来的横向空间两边均分（靠 .learn-phone 的 margin:0 auto）。
+     横向的「非屏幕」宽度**实测**而不是写死常量：窄屏断点下 body/手机框的
+     内边距都会收小，写死的数一改就是错的。 */
+  const bar = $("#learnBar"), body = win.querySelector(".learn-body");
+  const phone = win.querySelector(".learn-phone");
+  const padX = el => parseFloat(getComputedStyle(el).paddingLeft)
+                   + parseFloat(getComputedStyle(el).paddingRight);
+  const chromeX = 2 + padX(body) + padX(phone);      // 2 = .learn-win 左右边框
+  win.style.width = "";
+  const fitW = win.offsetWidth;                      // 自动宽度：标题栏/提示条够用
+  win.style.width = Math.max(fitW, vw * s + chromeX) + "px";
+
+  const note = $("#learnNote");
+  note.className = "";
+  note.textContent = `视口 ${vw}×${vh}` + (s < 0.999 ? ` · 缩放 ${Math.round(s * 100)}%` : "");
+  learnClamp();
+}
+
+function learnSlow(){
+  const note = $("#learnNote");
+  note.className = "warn";
+  // 文案刻意短：提示语锁成一行（见 CSS），窗口在缩放状态下只有 300 出头宽，
+  // 写长了会被省略号吃掉最关键的「点 ↗」。
+  note.textContent = "加载慢或被拦截？点 ↗ 在新标签打开";
+}
+
+function learnShow(){
+  $("#learnWin").classList.add("on");       // 先上屏，learnLayout 才能量到尺寸
+  learnOn = true;
+  // 懒加载：只有第一次真的去拉对方站点。用显式标志而不是读 iframe.src ——
+  // 没有 src 属性时 `src` 的取值在各浏览器上不完全一致（空串 / 解析后的文档地址）。
+  if(!learnLoaded){
+    learnLoaded = true;
+    $("#learnLoad").classList.remove("gone");
+    $("#learnFrame").src = $("#learnFrame").dataset.src;
+    clearTimeout(learnTimer);
+    learnTimer = setTimeout(learnSlow, LEARN_SLOW);
+  }
+  learnLayout();
+  $("#learnClose").focus();
+}
+
+function learnHide(){
+  clearTimeout(learnTimer);
+  learnOn = false;
+  $("#learnWin").classList.remove("on");
+  // 关窗就把位移归零：下次打开回到正中央，免得用户以为窗口「飘走了」
+  $("#learnWin").style.setProperty("--lx", "0px");
+  $("#learnWin").style.setProperty("--ly", "0px");
+  $("#learnBtn").focus();
+}
+
+$("#learnBtn").onclick = learnShow;
+$("#learnClose").onclick = learnHide;
+/* 没有遮罩，也就没有「点空白处关窗」—— 关窗只有 ✕ 与 Esc 两条路。 */
+$("#learnOut").href = LEARN_URL;
+
+$("#learnFrame").addEventListener("load", () => {
+  if(!learnOn) return;                      // 页面加载时那次 about:blank 不算数
+  clearTimeout(learnTimer);
+  $("#learnLoad").classList.add("gone");
+  learnLayout();                            // 顺便把提示语恢复成尺寸说明
+});
+
+$("#learnReload").onclick = () => {
+  const fr = $("#learnFrame");
+  if(!learnOn){ learnShow(); return; }
+  if(!learnLoaded){ fr.src = fr.dataset.src; learnLoaded = true; return; }
+  $("#learnLoad").classList.remove("gone");
+  clearTimeout(learnTimer);
+  learnTimer = setTimeout(learnSlow, LEARN_SLOW);
+  // 先落到 about:blank 再赋回去 —— 直接重赋同一个 URL 不保证重新导航
+  // （浏览器可能当成「没变化」），而 contentWindow.location.reload() 跨域会抛。
+  fr.src = "about:blank";
+  setTimeout(() => { fr.src = fr.dataset.src; }, 30);
+};
+
+$("#learnSize").addEventListener("click", e => {
+  const b = e.target.closest("button[data-size]");
+  if(!b || !LEARN_VIEWS[b.dataset.size]) return;
+  learnSize = b.dataset.size;
+  [...$("#learnSize").children].forEach(x => x.classList.toggle("on", x === b));
+  // 换档就是换了一个尺寸的窗口，原来的位移没有参照意义了 → 归零重新居中
+  $("#learnWin").style.setProperty("--lx", "0px");
+  $("#learnWin").style.setProperty("--ly", "0px");
+  learnLayout();
+});
+
+/* 拖拽：指针事件统一处理鼠标与触屏。位移写进 --lx/--ly（CSS 变量），不重写
+   transform —— 那会把居中的 translate(-50%,-50%) 一起覆盖掉。 */
+(function(){
+  const bar = $("#learnBar"), win = $("#learnWin");
+  let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;
+  bar.addEventListener("pointerdown", e => {
+    if(e.target.closest("button,a")) return;   // 标题栏上的控件不该触发拖拽
+    dragging = true;
+    sx = e.clientX; sy = e.clientY;
+    ox = parseFloat(win.style.getPropertyValue("--lx")) || 0;
+    oy = parseFloat(win.style.getPropertyValue("--ly")) || 0;
+    bar.classList.add("dragging");
+    // 合成事件（探针/自动化会造）里 pointerId 不是活跃指针，setPointerCapture 会抛
+    try{ bar.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  bar.addEventListener("pointermove", e => {
+    if(!dragging) return;
+    win.style.setProperty("--lx", (ox + e.clientX - sx) + "px");
+    win.style.setProperty("--ly", (oy + e.clientY - sy) + "px");
+    learnClamp();
+  });
+  const stop = e => {
+    if(!dragging) return;
+    dragging = false;
+    bar.classList.remove("dragging");
+    try{ bar.releasePointerCapture(e.pointerId); }catch(_){}
+  };
+  bar.addEventListener("pointerup", stop);
+  bar.addEventListener("pointercancel", stop);
+})();
+
+addEventListener("keydown", e => {
+  if(e.key === "Escape" && learnOn){ e.preventDefault(); learnHide(); }
+});
+addEventListener("resize", learnLayout);
+
+boot().then(deepLink);
+</script>
+
+<script src="static/aurora.js"></script>
+<script>
+/* ==================== 背景动效启动 ====================
+   组件本体在 /static/aurora.js（从 React Bits 的 <Aurora /> 移植成裸 WebGL2，
+   着色器逐字保留）。这里只负责给一组适合浅色界面的参数。
+
+   调参口径见 tools/aurora_preview.py —— 它把 AURORA_FRAG 的覆盖逻辑搬成 numpy，
+   能离线算出「与页底的色差多大、多少像素看得出、顶部标题区还剩多少对比度」。
+   headless 浏览器的截图里不含 WebGL 图层，光靠看截图分不清「参数太淡」还是
+   「压根没画」，所以观感只能靠离屏出图判断。
+
+   注意「整体浓淡」不在这个对象里，而是在 CSS 的 .bgfx{opacity:.4}。
+   要更淡/更明显改那一个数就行；改 colorStops 会连带改掉色相，别那么干。
+
+   调参对照原版 props：
+     colorStops    三个色号，从左到右（0.0 / 0.5 / 1.0 三个断点）
+     blend         光带边缘的软硬 —— 越大过渡越宽、峰值越低
+     amplitude     光带的起伏高度
+     speed         每秒推进多少个噪声单位
+     lightMode     浅色底必须开：原版默认是给深色底的（透明叠加发光），
+                   浅色底上那样等于看不见，所以作者的浅色分支是「往白里调色」
+*/
+const AURORA_OPTS = {
+  /* 粉 → 淡紫 → 天蓝，压在近白的页底上很轻。选这一组不是审美拍的：
+     近白底上真正吃掉正文对比度的是**绿通道**（亮度权重 0.715，红 0.213、
+     蓝只 0.072），所以色带越偏离白色的那个方向落在红/蓝上越划算。
+     实测在「顶部副标题对比度」的同一条约束下，这组色带能换到 20.8% 的可辨面积，
+     而靛蓝系那组（#a5b4fc/#818cf8）只有 4~6% —— 差五倍。
+     注意别指望靠调淡背景来换对比度：底色接近白，损失几乎与 .bgfx 的 opacity
+     无关（.4 降到 .2 只回升 0.3）。正文那边靠 --muted-on-aurora 解决。 */
+  colorStops: ["#fbcfe8", "#ddd6fe", "#bfdbfe"],
+  blend: 0.55,             // 过渡宽度；再大峰值会被压平，光带边缘就糊了
+  amplitude: 0.9,          // 起伏：0 是一条平直的横带，1.5 以上像波浪
+  speed: 0.5,              // 光带横移约 5% 屏宽/秒，慢到不会分心
+  lightMode: true,         // 这个页面是浅色底，必开
+};
+
+(function mountBackground(){
+  const box = document.getElementById("bgfx");
+  if(!box || !window.Aurora) return;
+
+  // 背景动效没有开关：它是装饰，不该占一个需要用户理解的按钮位。
+  // 拿不到 WebGL2、或系统开了「减少动态效果」时，组件自己会静默降级
+  // （返回一个空实例，只画一帧静态图），这里不用额外处理。
+  //
+  // 「不影响页面」是靠结构保证的，不是靠调参：.bgfx 是 fixed + z-index:0 +
+  // pointer-events:none，正文所在的 .wrap 是 z-index:1，且所有卡片都是不透明的
+  // --panel:#ffffff。所以光带既接不到点击，也不可能透过卡片映到文字底下。
+  try{
+    const fx = window.Aurora.create(box, AURORA_OPTS);
+    // has-bgfx 只是个标记，没有任何样式跟着它 —— 留着是为了让外部
+    // （排查、以及 tools/test_web.py 的探针）能一眼看出 WebGL 真的起来了。
+    if(fx.ok) document.body.classList.add("has-bgfx");
+  }catch(e){
+    console.warn("[Aurora] 初始化失败，背景动效跳过：", e);
+  }
+})();
+</script>
+</body>
+</html>

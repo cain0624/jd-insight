@@ -1,0 +1,103 @@
+/* 发布版专属：大模型接入设置面板的样式。
+ *
+ * 只在 GitHub Pages 构建产物里注入，`kb/web/index.html` 不动 ——
+ * 那份前端是本地版与线上版共用的唯一事实来源，理由见 publish/engine/api.js 的文件头。
+ *
+ * 全部走 index.html 里已定义的设计变量（--panel / --line / --brand / --radius …），
+ * 这样两边的观感不会各自演化。这里不重复定义任何颜色。
+ */
+
+/* ---------- 页头右上角的齿轮 ----------
+   .head-row 本来是 text-align:center 的一段文字，右侧是空的。
+   用绝对定位把按钮压上去，不动它的布局。 */
+.head-row{position:relative}
+.kp-gear{position:absolute;right:0;top:0;display:inline-flex;align-items:center;gap:5px}
+
+/* 窄屏：标题居中时右上角会挤到「求职，我帮你」的右边缘，
+   所以窄屏改成常规流（回到标题下方居中），不叠在文字上。 */
+@media (max-width:640px){
+  .kp-gear{position:static;margin-top:12px}
+}
+
+/* ---------- 遮层与弹层 ----------
+   z-index 取 29/30：页面里已有 .mask(19) 与历史抽屉，不能压住它们，也不能被压住。 */
+.kp-mask{position:fixed;inset:0;background:rgba(16,24,40,.32);z-index:29;display:none}
+.kp-mask.on{display:block}
+.kp-modal{
+  position:fixed;z-index:30;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(540px,calc(100vw - 28px));max-height:min(86vh,760px);overflow:auto;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:0 18px 50px rgba(16,24,40,.18);display:none;
+  padding:20px 22px 22px;
+}
+.kp-modal.on{display:block}
+
+.kp-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.kp-head h3{margin:0;font-size:17px;letter-spacing:-.2px;flex:1}
+.kp-close{
+  background:transparent;border:0;font:inherit;font-size:20px;line-height:1;
+  color:var(--faint);cursor:pointer;padding:2px 6px;border-radius:6px;
+}
+.kp-close:hover{color:var(--text);background:var(--bg)}
+
+.kp-lead{margin:6px 0 14px;font-size:13px;color:var(--muted);line-height:1.6}
+.kp-lead b{color:var(--text)}
+
+/* ---------- 预设 ---------- */
+.kp-presets{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:6px}
+.kp-chip{
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;
+  padding:5px 11px;font:inherit;font-size:12.5px;color:var(--muted);
+  cursor:pointer;transition:.15s;white-space:nowrap;
+}
+.kp-chip:hover{border-color:#c7d2fe;color:var(--brand);background:var(--brand-soft)}
+.kp-chip .tag{font-size:11px;margin-left:5px;opacity:.75}
+.kp-chip.on{border-color:#c7d2fe;background:var(--brand-soft);color:var(--brand)}
+/* 实测浏览器直连不通的那些：不可点，只作记录。点了会白白撞一次跨域。 */
+.kp-chip.off{
+  cursor:not-allowed;color:var(--faint);border-style:dashed;background:var(--bg);
+}
+.kp-chip.off:hover{border-color:var(--line);color:var(--faint);background:var(--bg)}
+.kp-presets-note{font-size:12px;color:var(--faint);margin:0 0 14px;line-height:1.55}
+
+/* ---------- 字段 ---------- */
+.kp-field{margin-bottom:13px}
+.kp-field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.kp-field input{
+  width:100%;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:9px 11px;font:inherit;font-size:13.5px;color:var(--text);
+}
+.kp-field input:focus{outline:none;border-color:#c7d2fe;box-shadow:0 0 0 3px var(--brand-soft)}
+.kp-hint{font-size:12px;color:var(--faint);margin-top:5px;line-height:1.5}
+
+/* ---------- 动作 ---------- */
+.kp-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.kp-btn{
+  flex:1;min-width:104px;background:var(--brand);border:1px solid var(--brand);
+  color:#fff;border-radius:8px;padding:9px 14px;font:inherit;font-size:13px;
+  cursor:pointer;transition:.15s;
+}
+.kp-btn:hover{filter:brightness(1.06)}
+.kp-btn:disabled{opacity:.6;cursor:default}
+.kp-btn.sec{background:var(--panel);border-color:var(--line);color:var(--muted)}
+.kp-btn.sec:hover{border-color:#c7d2fe;color:var(--brand);background:var(--brand-soft);filter:none}
+.kp-btn.danger{background:var(--panel);border-color:var(--line);color:var(--err)}
+.kp-btn.danger:hover{border-color:#fecaca;background:var(--err-soft);filter:none}
+
+.kp-result{margin:12px 0 0;font-size:13px;line-height:1.6;min-height:1px}
+.kp-result.ok{color:var(--ok)}
+.kp-result.err{color:var(--err)}
+
+/* ---------- 隐私说明 ---------- */
+.kp-privacy{
+  margin-top:18px;border-top:1px solid var(--line-soft);padding-top:13px;
+  font-size:12.5px;color:var(--muted);line-height:1.65;
+}
+.kp-privacy summary{cursor:pointer;color:var(--brand);font-size:12.5px;user-select:none}
+.kp-privacy ul{margin:10px 0 0;padding-left:18px}
+.kp-privacy li{margin-bottom:7px}
+.kp-privacy code{
+  background:var(--bg);border:1px solid var(--line);border-radius:5px;
+  padding:1px 5px;font-size:11.5px;
+}
+.kp-privacy b{color:var(--text)}
