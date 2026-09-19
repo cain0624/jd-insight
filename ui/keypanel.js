@@ -256,13 +256,26 @@
     }
     if (!cfg.model) { say("模型名不能为空。", "err"); return; }
 
+    /* 写进去了没有 —— 必须看返回值。`JDLLM.save()` 在 localStorage 不可用
+       （隐私模式、站点数据被禁）时是**返回 false 而不是抛错**。
+       这里曾经不看返回值，无条件说「已保存」—— 于是那句话可以出现在
+       一个字都没写进去的时候，而用户只会以为「填了也没用」。 */
+    var ok = llm().save(cfg);
+
+    if (!ok) {
+      say("没能保存：这台浏览器不允许本站写入 localStorage（常见于隐私模式，"
+          + "或禁用了站点数据）。现在填的配置刷新后会丢 —— "
+          + "可以用「测试连接」先验证，然后换普通窗口重试。", "err");
+      apply();
+      return;            // 不关面板：这次不算成功，得让他看见原因
+    }
+
     if (!cfg.api_key) {
       say("已保存地址与模型。但还没有 Key —— 需要模型的问题仍然答不了"
           + "（指标类问题不受影响）。", "ok");
     } else {
       say("已保存。Key 只写进了这台浏览器的 localStorage。", "ok");
     }
-    llm().save(cfg);
     apply();
     setTimeout(close, 700);
   }

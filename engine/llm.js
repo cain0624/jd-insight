@@ -15,11 +15,29 @@
  *
  * ② **CORS 是硬门槛，且无法在代码里补救**。带 `Authorization` 头 + JSON body
  *    的 POST 一定会触发预检（OPTIONS）。厂商不回 CORS 头就是不行，代理也
- *    绕不过去（除非用户自己搭代理，那是他的选择）。实测过两家：
- *      · 硅基流动 api.siliconflow.cn   → `access-control-allow-origin: *`
- *      · DeepSeek  api.deepseek.com    → 回显请求的 origin
- *    其他厂商没实测，所以下面的 PRESETS 里凡是没验过的都标了出来 ——
- *    宁可让用户看到「未实测」，也不要让他以为「列出来的就一定能用」。
+ *    绕不过去（除非用户自己搭代理，那是他的选择）。
+ *
+ *    2026-09-19 在**线上页面的真实执行环境**里逐个打过 —— 用一把故意无效的
+ *    假 key，看能不能拿到 HTTP 状态码：拿得到就说明请求真的到了服务端、
+ *    跨域是通的（401 正是假 key 该有的结果）。
+ *      · 硅基流动  api.siliconflow.cn     → 401，579ms  ✅
+ *      · DeepSeek  api.deepseek.com       → 401，351ms  ✅
+ *      · 通义千问  dashscope.aliyuncs.com → 401，456ms  ✅
+ *      · Kimi      api.moonshot.cn        → 401，492ms  ✅
+ *      · 智谱 GLM  open.bigmodel.cn       → 401，490ms  ✅
+ *      · devin-tec api.devin-tec.cn       → TypeError，373ms  ❌ 预检就被拦
+ *      · OpenAI    api.openai.com         → TypeError，284ms  ❌（国内网络，
+ *                                           没走到跨域这一步）
+ *    所以 PRESETS 里标「已实测」的是真的打过，「未实测跨域」是真的没打 ——
+ *    这个字段别凭印象改。
+ *
+ *    另记一笔**试过但不可行**的路：本机起一个带 CORS 头的转发代理。
+ *    混合内容那关能过（loopback 属于 potentially trustworthy origin），
+ *    但 Chrome 153 的 Local Network Access 会拦：
+ *      blocked by CORS policy: Permission was denied for this request to
+ *      access the `loopback` address space.
+ *    连 CDP 预授权 `localNetworkAccess` 都无效，只有改浏览器启动参数才通。
+ *    对线上访客不是一个可提的方案 —— 详情见 tools/llm_cors_proxy.mjs。
  *
  * ③ **网络错误在浏览器里分不出因**。fetch 被 CORS 拦掉、DNS 挂了、TLS 失败、
  *    用户断网，抛出来的都是同一个 `TypeError: Failed to fetch`。本地版能靠
@@ -32,10 +50,10 @@
  * 才可能决定去填 key。构造即抛错会让整个页面用不了。
  */
 (function (root, factory) {
-  var api = factory();
+  var api = factory(root);
   root.JDLLM = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
   var SK = "jd_insight_llm";        // localStorage 键名
@@ -62,14 +80,18 @@
       model: "deepseek-chat", tested: true,
       note: "跨域头实测可用（回显 origin）" },
     { name: "通义千问", base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-      model: "qwen-plus", tested: false, note: "未实测跨域" },
+      model: "qwen-plus", tested: true,
+      note: "跨域实测可用（2026-09-19 在线上页面真实环境里验过，假 key 拿到 401）" },
     { name: "Kimi", base_url: "https://api.moonshot.cn/v1",
-      model: "moonshot-v1-8k", tested: false, note: "未实测跨域" },
+      model: "moonshot-v1-8k", tested: true,
+      note: "跨域实测可用（同上）" },
     { name: "智谱 GLM", base_url: "https://open.bigmodel.cn/api/paas/v4",
-      model: "glm-4-flash", tested: false, note: "未实测跨域" },
+      model: "glm-4-flash", tested: true,
+      note: "跨域实测可用（同上）" },
     { name: "OpenAI", base_url: "https://api.openai.com/v1",
       model: "gpt-4o-mini", tested: false,
-      note: "未实测跨域；且国内网络通常需要代理" },
+      note: "未实测跨域；国内网络通常需要代理。2026-09-19 实测：当前网络下请求"
+          + "连发都没发出去（那不是跨域的结论）" },
 
     /* 实测记录：**浏览器直连不可用**。
      *
@@ -83,8 +105,9 @@
      * 浏览器就会拦掉 —— 命令行能通，页面一定不能通。 */
     { name: "devin-tec 中转", base_url: "https://api.devin-tec.cn/v1",
       model: "glm-5.3-flash", tested: false, works: false,
-      note: "实测该域名不回 CORS 头：curl 能通，浏览器会在预检阶段被拦掉，"
-          + "纯前端直连用不了。此处仅作记录。" },
+      note: "实测该域名不回跨域头：curl 能通，浏览器会在预检阶段被拦掉，"
+          + "纯前端直连用不了。2026-09-19 线上复测仍是 TypeError: Failed to "
+          + "fetch，373ms 即失败（就停在预检那一步）。此处仅作记录。" },
   ];
 
   function LLMError(msg) {
@@ -135,16 +158,37 @@
 
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
-  function describe(e) {
+  /** 实测过「浏览器直连不可用」的域名。用户手填上来时直接点名，
+   *  别让他照着三种可能猜 —— 猜错会往错的方向查半天。 */
+  function blockedNote(baseUrl) {
+    var u = String(baseUrl || "").replace(/\/+$/, "");
+    for (var i = 0; i < PRESETS.length; i++) {
+      var p = PRESETS[i];
+      if (p.works === false &&
+          String(p.base_url || "").replace(/\/+$/, "") === u) return p;
+    }
+    return null;
+  }
+
+  function describe(e, baseUrl) {
     /* 浏览器把「跨域被拦」「断网」「DNS 失败」全压成一个 TypeError，
        这里能确定的只有「请求没到达/没拿到响应」这件事本身。 */
     var m = (e && e.message) || String(e);
     if (e && e.name === "AbortError") {
-      return "请求超时。模型服务可能正忙，或网络较慢 —— 可以调大超时时间后重试。";
+      return "请求超时：" + baseUrl + " 在超时时间内没有回响应。" +
+             "可以调大超时后重试，或换一家更快的服务商。";
     }
-    return "网络请求失败（" + m + "）。常见原因：① 网络不通或需要代理；" +
-           "② 该接口未开启浏览器跨域（CORS）—— 这种情况换一家服务商最快；" +
-           "③ base_url 填错了（注意要带 /v1 之类的路径前缀）。";
+    var bad = blockedNote(baseUrl);
+    if (bad) {
+      return "网络请求失败（" + m + "）：「" + bad.name + "」实测不回跨域头，"
+           + "浏览器在预检那一步就会拦掉它 —— 纯前端页面里这一家用不了，"
+           + "请换面板里标着「已实测」的服务商。";
+    }
+    return "网络请求失败（" + m + "）：请求没能拿到响应。最可能的原因是" +
+           "① 该服务商不允许浏览器跨域（CORS）—— 换一家最快，面板里标" +
+           "「已实测」的五家都验过；其次是 ② 网络不通或需要代理；" +
+           "③ 地址填错了（要带 /v1 这类前缀，且不要带 /chat/completions）。" +
+           "本次请求的是 " + baseUrl + "。";
   }
 
   /* 与 kb/llm.py 的 parse_json 一致：模型常把 JSON 包在 ``` 围栏里，
@@ -229,7 +273,7 @@
           });
         } catch (e) {
           clearTimeout(timer);
-          last = describe(e);
+          last = describe(e, baseUrl);
           if (e && e.name === "AbortError") break;   // 超时不重试：再等一次还是等
           await sleep(1500 * (attempt + 1));
           continue;
@@ -247,8 +291,10 @@
         if (r.status === 401 || r.status === 403) {
           /* 不把响应体整个抛出去：某些网关会把请求头回显在错误里，而那里有 key。 */
           throw LLMError(
-            "鉴权失败（HTTP " + r.status + "）。请检查设置里的 API Key 与接口地址" +
-            "是否属于同一家服务商 —— 这两项必须配套。");
+            "鉴权失败（HTTP " + r.status + "）：这把 Key 在 " + baseUrl +
+            " 上不被接受（模型填的是 " + model + "）。\n" +
+            "Key 与接口地址必须来自同一家服务商 —— 最常见的两种错是" +
+            "「A 家的 Key 填在 B 家的地址上」和「地址漏了 /v1」。");
         }
         if (r.status === 429) {
           last = "触发限流（429）：请求太频繁或额度用尽。";
