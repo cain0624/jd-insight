@@ -218,8 +218,12 @@
       skill_rows: JD.val("SELECT count(*) FROM job_skill"),
       months: JD.all("SELECT DISTINCT month FROM job ORDER BY month")
         .map(function (r) { return r[0]; }),
+      /* 并列必须有显式打破键 —— 只写 `ORDER BY count(*) DESC` 时，名次并列的
+       * 那几行顺序由 SQLite 的分组实现决定，于是「Python 侧读源库」与
+       * 「JS 侧读导出库」会给出不同的顺序（实测 1991 条时「伪 AI PM」与
+       * 「半 AI PM」都是 706 条）。与 kb/profile.py 的 ai_levels 同口径。 */
       ai_levels: JD.all("SELECT ai_level, count(*) FROM job GROUP BY ai_level "
-        + "ORDER BY count(*) DESC").map(function (r) {
+        + "ORDER BY count(*) DESC, ai_level").map(function (r) {
           return { name: r[0], n: r[1] };
         }),
     };

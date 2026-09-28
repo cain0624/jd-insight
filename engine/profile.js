@@ -109,8 +109,28 @@
    * 所以不能图省事写 Math.round —— 那会在占比文案上给出不同的整数。 */
   function fmt0(v) { return String(roundHalfEven(v)); }
 
-  /* f"{v:.1f}"：一位小数不可能出现精确平局，toFixed 就是规格里的精确舍入。 */
-  function fmt1(v) { return v.toFixed(1); }
+  /* f"{v:.1f}"：和 fmt0 一样必须走**精确的十进制舍入**，不能图省事写 toFixed。
+   *
+   * 这里踩过一个真实的反例（2026-09-28，扩池后城市对拍炸出来的）：
+   * 本函数原来的注释写着「一位小数不可能出现精确平局，toFixed 就是规格里的
+   * 精确舍入」—— 那是错的。`99/240*100` 恰好是 41.25，而 41.25 在二进制里
+   * 是**精确可表示**的，于是构成真正的平局：
+   *     Python  f"{41.25:.1f}"      -> '41.2'   （逢半取偶）
+   *     JS      (41.25).toFixed(1)  -> '41.3'
+   * 样本量一上来，占比落在 .x5 上的概率并不低，两边就会在**某一条具体文案**上
+   * 分叉。所以这里复用 roundScaled(v,1) —— 它和 fmt0 共用同一套
+   * 「解成 m×2^e、再按十进制精确除法判平局」的实现，天然与 Python 一致。
+   *
+   * 顺带把 `-0.04 -> '-0.0'` 这种**保留符号的零**也对齐（Python 会带负号）。 */
+  function fmt1(v) {
+    if (!isFinite(v)) return String(v);
+    var neg = v < 0 || Object.is(v, -0);
+    var q = roundScaled(Math.abs(v), 1);   // 已是「×10 后逢半取偶」的整数
+    var s = q.toString();
+    if (s.length < 2) s = "0".repeat(2 - s.length) + s;
+    s = s.slice(0, -1) + "." + s.slice(-1);
+    return (neg ? "-" : "") + s;
+  }
 
   /* f"{cap:g}"：Python 的 'g' 默认 6 位有效数字，定点/指数形式按指数范围切换，
    * 并剥掉尾随的 0。cap 是 round(x,2) 的产物（≤2 位小数、量级 0~10），
@@ -285,14 +305,20 @@
   /* ======================= 城市清单 ======================= */
 
   /* 工作地是多值字段：库里存在「北京/上海」这类写法，直接 GROUP BY city 会把
-   * 拼接串当成一个独立城市。所以一律拆开计数 —— 与 profile.py 同一条正则。 */
+   * 拼接串当成一个独立城市。而且新采的 Boss 数据带行政区（「深圳·南山区」），
+   * 「·」是**城市与行政区的分隔**、不是并列 —— 只按多值分隔符拆的话，
+   * 93 个取值会全留在清单里，前端城市列表被行政区刷屏。
+   * 所以：先按多值分隔符拆段，每段再取「·」前那段当城市名。
+   * 与 profile.py 同一条规则（两边必须一致，否则静默漂移）。 */
   var CITY_SEP = /[/、,，;；|]+/;
+  var CITY_DISTRICT = /[·・\-\u2014]\s*/;
 
   function splitCities(raw) {
     if (!raw) return [];
     var out = [];
     raw.split(CITY_SEP).forEach(function (part) {
-      var c = pyStrip(part);
+      /* 只取「·」前那段；`横琴粤澳深度合作区` 这类没有点，split 后就是自身 */
+      var c = pyStrip(part.split(CITY_DISTRICT)[0]);
       if (c && out.indexOf(c) === -1) out.push(c);
     });
     return out;
@@ -617,6 +643,11 @@
      * 免得 api.js 再写一遍同样的 SQL —— 同一份口径两个入口，迟早分叉。 */
     dims: dims,
 
+    /* 导出 splitCities 只为**可测性**：`·` 是「城市·区」分隔这条语义，
+     * 拿 `cities()` 的实数据验不到（发布库早于带行政区的数据、一条 `·` 都没有，
+     * 退回旧实现也全绿），必须能直接对函数喂输入。属于刻意暴露的内部函数。 */
+    splitCities: splitCities,
+
     /* 「Python 语义复刻层」对外暴露一份，给 resume.js 这类后续移植文件复用。
      *
      * 为什么要导出而不是让每个移植文件各抄一份：round() 的银行家舍入、
@@ -626,7 +657,7 @@
      * 更具体的教训：`JDRetrieval.pyRound` 对 n≥1 是用「先乘 10^n 再取整」实现的，
      * 那个实现在 0.435 上给 0.44，Python 的 round(0.435, 2) 是 0.43 ——
      * 所以这一层不能随手拿一个名字像的实现顶替，必须用下面这份精确的。 */
-    pyRound: pyRound, fmt0: fmt0, pyFloatStr: pyFloatStr,
+    pyRound: pyRound, fmt0: fmt0, fmt1: fmt1, pyFloatStr: pyFloatStr,
     pyStrCmp: pyStrCmp, pyStrip: pyStrip,
   };
 })(globalThis);

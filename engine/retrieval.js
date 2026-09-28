@@ -274,12 +274,20 @@
           if (scores[cid] === undefined) { scores[cid] = 0; order.push(cid); }
           scores[cid] += s;
           var h = hits[cid] || (hits[cid] = []);
-          if (h.length < 6) {
-            h.push(term.charAt(0) === SKILL_TAG ? term.slice(1) : term);
-          }
+          h.push(term.charAt(0) === SKILL_TAG ? term.slice(1) : term);
         }
       }
       if (!order.length) return [];
+
+      /* 命中词列表的顺序：Python 侧来自 set 迭代、进程间不可复现，所以两边
+       * **都不能**在收集阶段就 `[:6]` 截断（那会让「前 6 个是谁」随哈希种子变，
+       * 2026-09-28 扩池后就有 2 行 evidence 因此对不上，对称差各 2 个元素）。
+       * 统一改成「全收集 → 按码点排序去重 → 取前 6」，两端都确定就必然一致。
+       * 技能 token 与字面词可能剥出同一个词（`@llm` / `llm`），故先 Set 去重。 */
+      for (var oi = 0; oi < order.length; oi++) {
+        var oc = order[oi];
+        hits[oc] = Array.from(new Set(hits[oc] || [])).sort().slice(0, 6);
+      }
 
       function wrap(cid) {
         var r = JD.__chunkByCid[cid];
