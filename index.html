@@ -12,10 +12,10 @@
 <meta name="theme-color" content="#f7f8fa" data-page-node-id="pFVnnQAOLoH9FTUCobSNzM">
 <meta name="color-scheme" content="light" data-page-node-id="SCvUid4aG5Ke5cExHqqoU5">
 <meta name="apple-mobile-web-app-capable" content="yes" data-page-node-id="EWA6FyzrHVPB748iwmvCC5">
-<meta name="apple-mobile-web-app-title" content="求职，我帮你" data-page-node-id="yHZtCqBLNW3vaQYmQhTnwb">
+<meta name="apple-mobile-web-app-title" content="速聘" data-page-node-id="yHZtCqBLNW3vaQYmQhTnwb">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Ctext x='16' y='22' font-size='15' text-anchor='middle' fill='%23fff' font-family='sans-serif'%3EJD%3C/text%3E%3C/svg%3E" data-page-node-id="oxuedEQrGMvRAIc8R6AERA">
 <link rel="stylesheet" href="static/aurora.css" data-page-node-id="CSiOMZhnzXVUofKGQxpzh4">
-<title>求职，我帮你 · AI 产品经理岗位知识库</title>
+<title>速聘 · AI 产品经理岗位知识库</title>
 <style>
   :root{
     --bg:#f7f8fa; --panel:#ffffff; --line:#e5e7eb; --line-soft:#f0f1f3;
@@ -668,12 +668,12 @@
   <header data-page-node-id="EBrNXatNZdhpFCvSanPJ98">
     <div class="head-row" data-page-node-id="GrUnCtOLM2QmgUXYku7E73">
       <div class="grow" data-page-node-id="SVyBmfRcBROimpTAzLmowZ">
-        <h1 data-page-node-id="2tSko462n8A1GfX6CJg0vH">求职，我帮你</h1>
+        <h1 data-page-node-id="2tSko462n8A1GfX6CJg0vH">速聘</h1>
         <p data-page-node-id="hq3QqKFVGk9HLjSqbsM7TV">国内 · 2026 年岗位 · RAG 原文检索 + Text-to-SQL 结构化统计</p>
       </div>
     </div>
     <div class="badges" id="badges" data-page-node-id="yGSlmzqDllJkWHVBkfAhPO"></div>
-    <div class="banner" id="banner" data-page-node-id="UVgrK2RKdBXvpOzS5DgoXN"></div>
+
   </header>
 
   <div class="tabs" id="tabs" data-page-node-id="ZWBODsz9sqh6nGoHBVfqie">
@@ -1301,16 +1301,6 @@ async function boot(){
     `命名指标 <b>${st.metrics || "—"}</b> 个`,
     `模型 <b>${esc(st.llm_model || "—")}</b>`
   ].map(x=>`<span class="badge">${x}</span>`).join("");
-
-  if(st.offline){
-    $("#banner").style.display = "block";
-    $("#banner").innerHTML = "未连接后端服务，当前为静态预览。<br>在项目目录执行 <code>./run.sh</code>，然后访问 <code>http://127.0.0.1:8770/</code> 即可提问。";
-  }else if(!st.llm_ready){
-    $("#banner").style.display = "block";
-    $("#banner").innerHTML = "尚未配置 API key —— 需要模型的问题暂时无法回答。<br>"
-      + "但<b>指标层覆盖的问题（如「各公司岗位数排行」）无需 key 即可提问</b>，可以先用它看数据。<br>"
-      + "要开启完整问答，把 key 填进 <code>config.json</code> 的 <code>api_key</code> 后重启服务。";
-  }
 
   /* 窄屏两处收敛：占位文案会折成三行、示例 chips 会铺满一整屏 */
   if(isNarrow()){
